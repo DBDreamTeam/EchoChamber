@@ -1,0 +1,37 @@
+/* Create tables */
+
+CREATE TABLE users(
+    'UserID'    INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    'Username'  VARCHAR NOT NULL,
+    'Password'  VARCHAR NOT NULL,
+    'Birthday'  DATE NOT NULL,
+    'PictureID' INTEGER,
+    'Privacy'   ENUM('Low', 'Medium', 'High')
+);
+
+CREATE TABLE friendships(
+    'UserOne'   INTEGER NOT NULL PRIMARY KEY,
+    'UserTwo'   INTEGER NOT NULL PRIMARY KEY
+);
+
+CREATE TABLE pictures(
+    'PictureID' INTEGER NOT NULL PRIMARY KEY,
+    'Picture'   VARBINARY
+);
+
+/* Insert dummy data */
+
+INSERT INTO users
+    ('UserID', 'Username',       'Password',    'Birthday',   'Privacy')
+VALUES
+    (1,        'Mabel Chan'    , 'password123', '1994-01-17', 'High'),
+    (2,        'Mairi Ng'      , 'password123', '1992-05-16', 'Low' ),
+    (3,        'Marisa Enhuber', 'password123', '1989-07-06', 'High'),
+    (4,        'Zak Walters'   , 'password123', '1994-05-20', 'High');
+
+INSERT INTO friendships
+    ('UserOne', 'UserTwo')
+VALUES
+    (1,         3),
+    (1,         4),
+    (3,         4);
