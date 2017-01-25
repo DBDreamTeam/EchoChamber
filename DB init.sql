@@ -16,7 +16,7 @@ CREATE TABLE friendships(
 
 CREATE TABLE pictures(
     'PictureID' INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    'Time'      DATETIME
+    'Time'      DATETIME,
     'Picture'   VARBINARY NOT NULL
 );
 
@@ -54,12 +54,12 @@ CREATE TABLE albums(
     'OwnerID'   INTEGER NOT NULL,
     'Time'      DATETIME NOT NULL,
     'Privacy'   ENUM('Low', 'Medium', 'High') NOT NULL
-)
+);
 
 CREATE TABLE album_contents(
     'AlbumID'   INTEGER NOT NULL PRIMARY KEY,
     'PictureID' INTEGER NOT NULL PRIMARY KEY
-)
+);
 
 CREATE TABLE comments(
     'CommentID' INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -68,7 +68,7 @@ CREATE TABLE comments(
     'PostID'    INTEGER NOT NULL,
     'UserID'    INTEGER NOT NULL,
     'Emoji'     VARCHAR /* Again, not sure how to handle this... */
-)
+);
 
 /* Insert dummy data */
 
