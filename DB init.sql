@@ -1,5 +1,12 @@
 /* Create tables */
 
+/*
+For privacy:
+Low:    Anyone can view
+Medium: Friends of friends can view
+High:   Only friends can view
+*/
+
 CREATE TABLE users(
     'UserID'    INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
     'Username'  VARCHAR NOT NULL,
