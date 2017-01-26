@@ -77,6 +77,12 @@ CREATE TABLE comments(
     'Emoji'     VARCHAR /* Again, not sure how to handle this... */
 );
 
+CREATE TABLE sentiments(
+    'UserID'    INTEGER NOT NULL PRIMARY KEY,
+    'Entity'    VARCHAR NOT NULL PRIMARY KEY,
+    'Sentiment' DECIMAL(1, 6)
+);
+
 /* Insert dummy data */
 
 INSERT INTO users
