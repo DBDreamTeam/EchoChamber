@@ -60,7 +60,7 @@ CREATE TABLE albums(
     'AlbumID'   INTEGER NOT NULL PRIMARY KEY,
     'OwnerID'   INTEGER NOT NULL,
     'Time'      DATETIME NOT NULL,
-    'Privacy'   ENUM('Low', 'Medium', 'High') NOT NULL
+    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends') NOT NULL
 );
 
 CREATE TABLE album_contents(
