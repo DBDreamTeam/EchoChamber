@@ -40,11 +40,11 @@ CREATE TABLE group_members(
     'UserID'    INTEGER NOT NULL PRIMARY KEY
 );
 
-CREATE TABLE blogs(
+CREATE TABLE blog_wall(
     'ID'        INTEGER NOT NULL PRIMARY KEY,
     'IsGroup'   BOOLEAN NOT NULL PRIMARY KEY,
     'Name'      VARCHAR NOT NULL,
-    'Privacy'   ENUM('Low', 'Medium', 'High') NOT NULL
+    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends') NOT NULL
 );
 
 CREATE TABLE posts(
@@ -63,11 +63,6 @@ CREATE TABLE albums(
     'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends') NOT NULL
 );
 
-CREATE TABLE album_contents(
-    'AlbumID'   INTEGER NOT NULL PRIMARY KEY,
-    'PictureID' INTEGER NOT NULL PRIMARY KEY
-);
-
 CREATE TABLE comments(
     'CommentID' INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
     'Time'      DATETIME NOT NULL,
@@ -82,6 +77,29 @@ CREATE TABLE sentiments(
     'Entity'    VARCHAR NOT NULL PRIMARY KEY,
     'Sentiment' DECIMAL(7, 6)
 );
+
+CREATE TABLE message(
+    'MessageID' INTEGER NOT NULL PRIMARY KEY,
+    'ChatID'    INTEGER NOT NULL,
+    'UserID'    INTEGER NOT NULL,
+    'Text'      TEXT NOT NULL,
+    'Photo'     IMAGE,
+    'DateTime'  DATETIME NOT NULL,
+);
+
+CREATE TABLE chat(
+    'ChatID'    INTEGER NOT NULL PRIMARY KEY,
+    'ChatTitle' TEXT NOT NULL,
+);
+
+
+CREATE TABLE chat_members (
+    'ChatID'    INTEGER NOT NULL PRIMARY KEY,
+    'UserID'    INTEGER NOT NULL PRIMARY KEY,
+);
+    
+    
+    
 
 /* Insert dummy data */
 
