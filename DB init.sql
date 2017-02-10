@@ -13,7 +13,7 @@ CREATE TABLE users(
     'Password'  VARCHAR NOT NULL,
     'Birthday'  DATE NOT NULL,
     'PictureID' INTEGER,
-    'Privacy'   ENUM('Low', 'Medium', 'High') NOT NULL
+    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL
 );
 
 CREATE TABLE friendships(
@@ -32,7 +32,7 @@ CREATE TABLE groups(
     'BlogID'    INTEGER NOT NULL,
     'Name'      VARCHAR NOT NULL,
     'PictureID' INTEGER,
-    'Privacy'   ENUM('Low', 'Medium', 'High') NOT NULL
+    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends') NOT NULL
 );
 
 CREATE TABLE group_members(
@@ -44,7 +44,7 @@ CREATE TABLE blog_wall(
     'ID'        INTEGER NOT NULL PRIMARY KEY,
     'IsGroup'   BOOLEAN NOT NULL PRIMARY KEY,
     'Name'      VARCHAR NOT NULL,
-    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends') NOT NULL
+    'Privacy'   ENUM('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL
 );
 
 CREATE TABLE posts(
@@ -66,10 +66,9 @@ CREATE TABLE albums(
 CREATE TABLE comments(
     'CommentID' INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
     'Time'      DATETIME NOT NULL,
-    /* 'Text'      VARCHAR NOT NULL, */
+    'Text'      VARCHAR NOT NULL,
     'PostID'    INTEGER NOT NULL,
     'UserID'    INTEGER NOT NULL,
-    'Emoji'     VARCHAR /* Again, not sure how to handle this... */
 );
 
 CREATE TABLE sentiments(
