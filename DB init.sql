@@ -105,10 +105,10 @@ CREATE TABLE chat_members (
 INSERT INTO users
     ('UserID', 'Username',       'Password',    'Birthday',   'Privacy')
 VALUES
-    (1,        'Mabel Chan',     'password123', '1994-01-16', 'High'),
-    (2,        'Mairi Ng',       'password123', '1989-05-16', 'Low' ),
-    (3,        'Marisa Enhuber', 'password123', '1989-07-06', 'High'),
-    (4,        'Zak Walters',    'password123', '1994-05-20', 'High');
+    (1,        'Mabel Chan',     'password123', '1994-01-16', 'Friends'),
+    (2,        'Mairi Ng',       'password123', '1989-05-16', 'Friends' ),
+    (3,        'Marisa Enhuber', 'password123', '1989-07-06', 'Friends'),
+    (4,        'Zak Walters',    'password123', '1994-05-20', 'Public');
 
 INSERT INTO friendships
     ('UserOne', 'UserTwo')
