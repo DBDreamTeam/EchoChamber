@@ -1,7 +1,7 @@
 CREATE TABLE `users` (
   `UserID` int(4) NOT NULL,
-  `Username` varchar(100)(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Password` varchar(100)(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Birthday` date NOT NULL,
   `PictureID` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -29,7 +29,7 @@ CREATE TABLE `groups`(
 );
 
 CREATE TABLE `group_members`(
-    `GroupID`   int(10) NOT NULL PRIMARY KEY,
+    `GroupID`   int(10) NOT NULL,
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`GroupID`, `UserID`)
 );
@@ -45,7 +45,7 @@ CREATE TABLE `blog_wall`(
 CREATE TABLE `posts`(
     `PostID`    int(10) AUTO_INCREMENT NOT NULL,
     `BlogID`    int(10) NOT NULL,
-    `Time`      datetime(20) NOT NULL,
+    `Time`      datetime(6) NOT NULL,
     `text`      varchar(100),
     `AlbumID`   int(10),
     PRIMARY KEY (`PostID`)
@@ -81,7 +81,7 @@ CREATE TABLE `message`(
     `UserID`    int(10) NOT NULL,
     `Text`      text(10) NOT NULL,
     `Photo`     longblob,
-    `datetime(20)`  datetime(6) NOT NULL,
+    `DateTime`  datetime(6) NOT NULL,
     PRIMARY KEY (`MessageID`)
 );
 
