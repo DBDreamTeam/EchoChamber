@@ -1,5 +1,5 @@
 CREATE TABLE `users` (
-  `UserID` int(4) NOT NULL,
+  `UserID` int(4) AUTO_INCREMENT NOT NULL,
   `Username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Birthday` date NOT NULL,
