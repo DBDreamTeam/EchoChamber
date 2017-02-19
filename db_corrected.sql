@@ -3,7 +3,8 @@ CREATE TABLE `users` (
   `Username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Birthday` date NOT NULL,
-  `PictureID` int(11) NOT NULL
+  `PictureID` int(11) NOT NULL,
+  PRIMARY KEY (`UserID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE `friendships` (
