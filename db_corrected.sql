@@ -15,7 +15,7 @@ CREATE TABLE `friendships` (
 
 CREATE TABLE `pictures`(
     `PictureID` int(10) AUTO_INCREMENT NOT NULL,
-    `Time`      datetime(6),
+    `Time`      timestamp(6),
     `Picture`   varbinary(100) NOT NULL,
     PRIMARY KEY (`PictureID`)
 );
