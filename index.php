@@ -1,63 +1,175 @@
-<html>
-<head>
-<Title>Registration Form</Title>
-<style type="text/css">
-    body { background-color: #fff; border-top: solid 10px #000;
-        color: #333; font-size: .85em; margin: 20; padding: 20;
-        font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    }
-    h1, h2, h3,{ color: #000; margin-bottom: 0; padding-bottom: 0; }
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.75em; }
-    h3 { font-size: 1.2em; }
-    table { margin-top: 0.75em; }
-    th { font-size: 1.2em; text-align: left; border: none; padding-left: 0; }
-    td { padding: 0.25em 2em 0.25em 0em; border: 0 none; }
-</style>
-</head>
-<body>
-<h1>Register here!</h1>
-<p>Fill in your name and email address, then click <strong>Submit</strong> to register.</p>
-<form method="post" action="index.php" enctype="multipart/form-data" >
-      Name  <input type="text" name="name" id="name"/></br>
-      Email <input type="text" name="email" id="email"/></br>
-      <input type="submit" name="submit" value="Submit" />
-</form>
 <?php
-// DB connection info
-$host = "localhost";
-$user = "root";
-$pwd = "root";
-$db = "registration";
-// Connect to database.
-try {
-    $conn = new PDO( "mysql:host=$host;dbname=$db", $user, $pwd);
-    $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-}
-catch(Exception $e){
-    die(var_dump($e));
-}
-if(!empty($_POST)) {
-try {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $date = date("Y-m-d");
-    // Insert data
-    $sql_insert = "INSERT INTO registration_tbl (name, email, date)
-                   VALUES (?,?,?)";
-    $stmt = $conn->prepare($sql_insert);
-    $stmt->bindValue(1, $name);
-    $stmt->bindValue(2, $email);
-    $stmt->bindValue(3, $date);
-    $stmt->execute();
-}
-catch(Exception $e) {
-    die(var_dump($e));
-}
-echo "<h3>Your're registered!</h3>";
-}
-
+include 'connect.php';
 ?>
 
-</body>
-</html>
+<!-- <?php
+// phpinfo();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+   include 'connect.php';
+   session_start();
+   header("location: login-destination.php");
+
+   //if($_SERVER["REQUEST_METHOD"] == "POST") {
+      // username and password sent from form ("posted by form")
+
+      // $var saving the "cleaned" input form data
+      $myusername = mysqli_real_escape_string($_POST['Username']);
+      $mypassword = mysqli_real_escape_string($_POST['Password']);
+
+      // query to get the username that matches the user input (saved in variable)
+      // * now contains all rows from user table
+      $sql = "SELECT * FROM users
+      WHERE Username = '{$myusername}', Password = '{$mypassword}'";
+      //save the vars returned from db into $result (variable)
+      $result = mysqli_query($db,$sql);
+
+$count = mysqli_num_rows($result);
+if ($count > 0) {// fetching data from associative array
+  while ($row = mysqli_fetch_assoc($result)) {
+    if (($row["Username"] == $myusername) && ($row["Password"] == $mypassword)) {
+      //registers the session on the specific user
+       $_SESSION['userID'] = $row['UserID'];
+    }else {
+      $error = "Wrong Username or Password. Please try again.";
+      echo $error;
+    }
+  }
+  }
+      // session set to active
+    //  $active = $row['active'];
+   // makes it all die
+      // or die('Error making select users query' . mysqli_error());
+   mysqli_close($link);
+     //"unset($_SESSION)";
+?> -->
+
+<!-- DOCTYPE -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Echo Chamber Login</title>
+    <meta charset="utf-8">
+    <meta name="author" content="DBDreamTeam">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <!-- Fonts -->
+    <link rel='stylesheet' type='text/css'
+        href='https://fonts.googleapis.com/css?family=Lato:400,700,900,300'>
+    <link rel='stylesheet' type='text/css'
+        href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'>
+    <link rel='stylesheet' type='text/css'
+        href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+</head>
+
+<!-- Wrapper Start -->
+<div class="wrapper" id="wrapper">
+
+<!-- Header -->
+<header>
+<div class="jumbotron jumbotron-fluid" id="banner">
+<div class="parallax test-centre" style="background-image: url(img/cover.jpg);">
+<div class="parallax-pattern-overlay">
+    <div class="container text-center" style="height: 60px; padding-top=170px;">
+        <a href="#"><img id="site-title" src="img/ECLogo1.png" alt="logo"
+            style="display:block; height:70px; display:inline; position:relative; left:-20px; top:-10px"/></a>
+        <h1 style="display:inline">EchoChamber</h1>
+        <h6 style="display:inline">a social network for people just like you.<h6>
+    </div>
+</div>
+</div>
+</header>
+
+<!-- About Us Section -->
+<section class="aboutus" id="aboutus">
+<div class="container">
+    <div class="row" style="padding-top:30px">
+        <div class="col-md-6">
+            <!--
+            <div class="heading text-center">
+            <img class="dividerline" src="img/sep.png" alt="">
+            <h2>About EchoChamber</h2>
+            <img class="dividerline" src="img/sep.png" alt="">
+            -->
+            <p> <b>EchoChamber</b> is the social network for the modern day.
+                Here, you can avoid seeing any views with which you disagree,
+                and bask in just how fabulously <b>right</b> you are about
+                everything. Join groups of like-minded people and while
+                away your days patting each other on the back, reaffirming
+                the views you came here with, and generally just reminding
+                yourself how superior you are to all those other idiots out
+                there. <b>Have fun!</b>
+            <p>
+        </div>
+        <div class="col-md-6 text-right">
+            <p style="position:relative; right:10px"><b>Log In</b></p>
+            <form action="login-destination.php" method="post">
+                <label>
+                    Email:
+                    <input type="Username" name="Username">
+                </label>
+                <label>
+                    Password:
+                    <input type="Password" name="Password">
+                </label>
+                <label>
+                    <input type="submit" value="Log In">
+                </label>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-3">
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact" id="contact">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Footer -->
+<section class="footer" id="footer">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Wrapper End -->
+</div>
