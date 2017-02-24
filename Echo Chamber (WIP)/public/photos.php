@@ -1,7 +1,21 @@
-<?php include 'connect.php'?>
-<?php
-ini_set('$file_uploads', 'On');
+<?php include '../includes/phptop.php';?>
+<?php include '../includes/functions.php';?>
+<?php include '../includes/photoFunctions.php';?>
+
+<?php 
+// In practice, to be set at login
+$_SESSION["userID"] = 105;
 ?>
+
+<?php
+$userID = $_SESSION["userID"];
+//$_SESSION["albumID"] = "hello";
+$albumID = $_SESSION["albumID"];
+echo $albumID;
+
+?>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -10,14 +24,6 @@ ini_set('$file_uploads', 'On');
 <title>Photos</title>
 
 <head>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-<script src="image-picker/image-picker.min.js"></script>
-
-<link rel="stylesheet" type="text/css" href ="image-picker/image-picker.css">
-
-
 </head>
 
 </head>
@@ -38,7 +44,7 @@ $selectAlbums = "SELECT AlbumName FROM albums WHERE OwnerID = {$userID}";
 
 <h2>Create an Album!</h2>
 
-<form action = "createAlbum.php" method="post">
+<form action = "../process/processCreateAlbum.php" method="post">
 
 Album Name: <br>
 <input type="text" name="albumName" placeholder="Enter a name for your album!" required><br>
@@ -57,127 +63,39 @@ Who can see your album? <br>
 
 <h2>Upload Photos!</h2>
 
+<!-- Form to allow users to upload photos -->
 <form action="uploadPhotos.php" method="post" enctype="multipart/form-data">
 
 Select an Image: <br>
 <input type="file" name = "uploadedimage"><br>
 
 Choose an album for your image: <br>
-
 <select name = "albumName">;
-
-<?php
-$albumNames = mysqli_query($link, $selectAlbums);
-    if (mysqli_num_rows($albumNames) > 0) {     
-        while ($row2 = mysqli_fetch_assoc($albumNames)) {
-            echo "<option value = \"". $row2["AlbumName"] . "\">" . $row2["AlbumName"] . "</option><br>";
-        }
-    } else {
-        echo "No albums";
-    }
-?>
-
+<? getUserAlbumsCB($userID, $link); // displays the photo albums of the currently logged-in user ?>
 </select><br>
-
-
-<!--<option value = "profilePics">Profile Pictures</option>
-    <option value = "books">Books</option>-->
-
 
 <input type = "submit" value = "Upload Now!"><br>
 
 </form>
 
-<h2>My albums</h2>
 
-<?php
-// Selects all albums owned by current user and displays their names
-$albumNames = mysqli_query($link, $selectAlbums);
-//$result = $link->query($selectAlbums);
+<h2> Your Albums! </h2>
 
-if (mysqli_num_rows($albumNames) > 0) {     
-    echo "<ul>";
-    while ($row = mysqli_fetch_assoc($albumNames)) {
-        echo "<li>" . $row["AlbumName"] . "<br>"; 
-    };
-    echo "</ul>";
+<form action = "../process/processDisplayAlbum.php" method="post">
 
-
-} else {
-    echo "No albums";
-}
-?>
-
-<h2> See photos from an album of your choice! </h2>
-
-<form action = "displayAlbumPhotos.php" method="post">
-
-<input type="submit" name="albumName" value="Books2">
-<input type = "submit" name ="albumName" value = "For3">
+<?php getUserAlbumBtns($userID, $link); ?>
 
 </form>
 
-<h2> Comment on photos! </h2>
-
-<!--
-<form action = "comment.php" method = "post" id="commentForm">
-
-<textarea name = "comment" form="commentForm" placeholder="Write your comment here"></textarea><br>
-
-<input type = "submit">
-</form>-->
-
-
-<h2>All Your Beautiful Photos! (and all the rest as well)</h2>
-
-<?php
-
-$selectPics = "SELECT pictures.Picture, pictures.AlbumID, pictures.PictureID FROM pictures, albums WHERE pictures.AlbumID = albums.AlbumID AND albums.OwnerID = {$userID}";
-
-$picResult = mysqli_query($link, $selectPics);
-?>
-
-
-<?php
-$i=1;
-if (mysqli_num_rows($picResult) > 0) {
-    while ($row3 = mysqli_fetch_assoc($picResult)) {
-        // print photo
-        echo "<img src = \"" . $row3["Picture"] . "\" width=\"200\" height=\"200\" id=\"" . $row3["PictureID"] . "\"> <br>";
-        
-?>
-
-    <form action = "comment.php" method = "post" id="commentForm<? echo $i; ?>">
-
-    <textarea name = "comment" form="commentForm<? echo $i;?>" placeholder="Write your comment here" value=" "></textarea><br>
-    
-    <input type = "hidden" name = "picID" value = "<?php echo $row3["PictureID"]; ?>">
-
-    <input type = "submit">
-    </form>
-
-<?
-        //print comments
-        $thisPicID = $row3["PictureID"];
-        
-        $selectComments = "SELECT comments.Time, comments.Text, users.Username FROM comments, users WHERE comments.UserID = users.UserID AND comments.PostID = {$thisPicID}";
-
-        $commentsResult = mysqli_query($link, $selectComments);
-
-        if (mysqli_num_rows($commentsResult) > 0) {
-            while ($row4 = mysqli_fetch_assoc($commentsResult)) {
-                echo $row4["Time"] . "<br>" . $row4["Username"] . "<br>" . $row4["Text"] . "<br>";
-            }
-        }
-    $i++;
-    }
-}
-?>
-
-
+<br>
+<?php displayAllUserPhotos($userID, $link) ?>
+<br>
+<h2> Photos from album </h2>
+<?php displayAlbumPhotos($albumID, $link)?>
 
 <?php
 mysqli_close($link);
 ?>
+
 </body>
 </html>
