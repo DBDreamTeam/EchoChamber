@@ -12,6 +12,57 @@ function GetImageExtension($imagetype) {
     }
 }
 
+// selects all friends of the specified user and returns and array of the user IDs of these friends
+function getFriendIDs($idUser, $conn) {
+    $friendArray = array();
+    $i = 0;
+    
+    $selectFriends = "SELECT friendships.UserTwo FROM friendships, users WHERE friendships.UserOne = {$idUser} AND users.UserID = friendships.UserTwo";
+    
+    $friendsResult = mysqli_query($conn, $selectFriends);
+    
+    if (mysqli_num_rows($friendsResult) > 0) {
+        while ($row = mysqli_fetch_assoc($friendsResult)) {
+            $friendArray[$i] = $row["UserTwo"];
+            $i++;
+        }
+    }
+    return $friendArray;
+}
+
+// gets the circles the user belongs to and returns an array of their IDs
+function getUserCircleIDs($userID, $conn) {
+    $circleArray = array();
+    $i = 0;
+    
+    $getCircles = "SELECT GroupID FROM group_members WHERE UserID = {$userID}";
+    
+    $circlesResult = mysqli_query($conn, $getCircles);
+    
+    if (mysqli_num_rows($circlesResult) > 0) {
+        while ($row = mysqli_fetch_assoc($circlesResult)) {
+            $circleArray[$i] = $row["GroupID"];
+            $i++;
+        }
+    }
+    return $circleArray;
+}
+
+// gets circle name from its ID
+function getCircleNamefromID($circleID, $conn) {
+    $circleName = null;
+    $getCircleNames = "SELECT Name FROM groups WHERE GroupID = {$circleID}";
+    
+    $circleNameResult = mysqli_query($conn, $getCircleNames);
+    
+    if (mysqli_num_rows($circleNameResult) > 0) {
+        while ($row = mysqli_fetch_assoc($circleNameResult)) {
+            $circleName = $row["Name"];
+        }
+    }
+    return $circleName;
+}
+
 // inserts an album into the albums table and returns the albumID
 function insertAlbum($albumName, $ownerID, $privacy, $conn) {
     $albumID = null;
@@ -25,6 +76,21 @@ function insertAlbum($albumName, $ownerID, $privacy, $conn) {
         echo "Error: ". $insertAlbum. "<br>". $conn->error;
     }
     return $albumID;
+}
+
+function insertImagePlus($albumID, $conn) {
+    $imageID = null;
+    $tempName = getTempName();
+    echo $tempName;
+    $targetPath = getTargetPath();
+    echo $targetPath;
+    
+    if(move_uploaded_file($tempName, $targetPath)) {
+        $imageID = insertImage($targetPath, $albumID, $conn);
+    } else {
+        exit("Error while uplaoding image on server");
+    }
+    return $imageID;
 }
 
 // inserts an image into the pictures table and returns the PictureID
@@ -156,6 +222,143 @@ function getPublicCircles($conn) {
         }
     }
     
+}
+
+// gets the chats the user currently belongs to and returns an array of the IDs of these chats
+function getUserChatIDs($userID, $conn) {
+    $chatArray = array();
+    $i=0;
+    
+    $selectChats = "SELECT ChatID FROM chat_members WHERE UserID = {$userID}";
+    
+    $chatResult = mysqli_query($conn, $selectChats);
+    
+    if(mysqli_num_rows($chatResult) > 0) {
+        while ($row = mysqli_fetch_assoc($chatResult)) {
+           $chatArray[$i] = $row["ChatID"];
+           $i++;
+        }
+    }
+    return $chatArray;
+}
+
+// gets Album IDs for users albums
+function getUserAlbumIDs($userID, $conn) {
+    $userAlbumArray = array();
+    $i = 0;
+    
+    $selectAlbums = "SELECT AlbumID FROM albums WHERE OwnerID = {$userID}";
+
+    $albumsResult = mysqli_query($conn, $selectAlbums);
+    
+    if(mysqli_num_rows($albumsResult) > 0) {
+        while($row = mysqli_fetch_assoc($albumsResult)) {
+            $userAlbumArray[$i] = $row["AlbumID"];
+            $i++;
+        }
+    }
+    return $userAlbumArray;
+}
+
+function getChatNameFromID($chatID, $conn) {
+    $chatName = null;
+    
+    $selectChatName = "SELECT ChatTitle FROM chat WHERE ChatID = {$chatID}";
+    
+    $chatNameResult = mysqli_query($conn, $selectChatName);
+    
+    if(mysqli_num_rows($chatNameResult) > 0) {
+        while($row = mysqli_fetch_assoc($chatNameResult)) {
+            $chatName = $row["ChatTitle"];
+        }
+    }
+    return $chatName;
+}
+
+// Inserts message into message table
+function insertMessage($ChatID, $UserID, $MsgContent, $MsgPic, $conn) {
+    $messageInsert = "INSERT INTO message (ChatID, UserID, Text, Photo) VALUE ({$ChatID}, {$UserID}, '{$MsgContent}', '{$MsgPic}')";
+
+    if ($conn -> query($messageInsert) === TRUE) {
+        echo "Message inserted into messages successfully";
+    } else {
+        echo "Error: ". $messageInsert . "<br>" . $conn->error;
+    }
+}
+
+function getImagePathFromID($imageID, $conn) {
+    $imagePath = null;
+    $selectImagePath = "SELECT Picture FROM pictures WHERE PictureID = {$imageID}";
+    
+    $imagePathResult = mysqli_query($conn, $selectImagePath);
+    
+    if(mysqli_num_rows($imagePathResult) > 0) {
+        while($row = mysqli_fetch_assoc($imagePathResult)) {
+            $imagePath = $row["Picture"];
+        }
+    }
+    return $imagePath;
+}
+
+function doesAlbumNameExist($albumName, $ownerID, $conn) {
+    $albumState = false;
+    $selectAlbum = "SELECT AlbumName FROM albums WHERE AlbumName = '{$albumName}' AND OwnerID = {$ownerID}";
+    
+    $selectAlbumResult = mysqli_query($conn, $selectAlbum);
+    
+    if(mysqli_num_rows($selectAlbumResult) > 0) {
+        $albumState = true;
+    } else {
+        $albumState = false;
+    }
+    return $albumState;
+}
+
+function getAlbumIDFromName($albumName, $ownerID, $conn) {
+    $albumID = null;
+    
+    $selectAlbumName = "SELECT AlbumID FROM albums WHERE AlbumName = '{$albumName}' AND OwnerID = {$ownerID}";
+    
+    $selectNameResult = mysqli_query($conn, $selectAlbumName);
+    
+    if(mysqli_num_rows($selectNameResult)>0) {
+        while($row = mysqli_fetch_assoc($selectNameResult)) {
+            $albumID = $row["AlbumID"];
+        }
+    }
+    return $albumID;
+}
+
+// gets all albums belonging to user with $userID, and echoes a combo box containing these albums
+function getUserAlbumsCB($userID, $conn) {
+
+    $selectAlbums = "SELECT AlbumName FROM albums WHERE OwnerID = {$userID}";
+    
+    $albumsResult = mysqli_query($conn, $selectAlbums);
+
+    if(mysqli_num_rows($albumsResult) > 0) {
+        while($row = mysqli_fetch_assoc($albumsResult)) {
+            echo "<option value = \"". $row["AlbumName"] . "\">" . $row["AlbumName"] . "</option><br>";
+        }
+    } else {
+        echo "No albums yet.";
+    }
+    
+}
+
+function getAlbumNameFromID($albumID, $conn) {
+    $albumName = null;
+    
+    $selectAlbumName = "SELECT AlbumName FROM albums WHERE AlbumID = {$albumID}";
+    
+    $albumNameResult = mysqli_query($conn, $selectAlbumName);
+    
+    if(mysqli_num_rows($albumNameResult) >0) {
+        while($row = mysqli_fetch_assoc($albumNameResult)) {
+            $albumName = $row["AlbumName"];
+        }
+    }
+    return $albumName;
 }
 
 ?>

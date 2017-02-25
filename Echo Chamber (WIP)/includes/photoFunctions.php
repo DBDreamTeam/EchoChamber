@@ -1,21 +1,4 @@
 <?
-// gets all albums belonging to user with $userID, and echoes a combo box containing these albums
-function getUserAlbumsCB($userID, $conn) {
-
-    $selectAlbums = "SELECT AlbumName FROM albums WHERE OwnerID = {$userID}";
-    
-    $albumsResult = mysqli_query($conn, $selectAlbums);
-
-    if(mysqli_num_rows($albumsResult) > 0) {
-        while($row = mysqli_fetch_assoc($albumsResult)) {
-            echo "<option value = \"". $row["AlbumName"] . "\">" . $row["AlbumName"] . "</option><br>";
-        }
-    } else {
-        echo "No albums yet.";
-    }
-    
-}
-
 function getUserAlbumBtns($userID, $conn) {
     $selectAlbums = "SELECT AlbumName, AlbumID FROM albums WHERE OwnerID = {$userID}";
 
