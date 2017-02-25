@@ -9,13 +9,10 @@ $_SESSION["userID"] = 105;
 
 <?php
 $userID = $_SESSION["userID"];
-//$_SESSION["albumID"] = "hello";
-$albumID = $_SESSION["albumID"];
-echo $albumID;
+$albumID = $_SESSION["albumID"]; // $albumID should be set to "allAlbums" at start of session
+//echo $albumID;
 
 ?>
-
-
 
 <!DOCTYPE html>
 <html>
@@ -32,24 +29,16 @@ echo $albumID;
 
 <h1>My Photos</h1>
 
-<?php 
-// in reality, get user id from sessions
-$userID = 105;
-?>
+<?php include '../includes/navigation.php'?>
 
-<?php
-$selectAlbums = "SELECT AlbumName FROM albums WHERE OwnerID = {$userID}";
-?>
-
-
-<h2>Create an Album!</h2>
-
+<h2>Create an Album</h2>
+<!-- Form to create a new album-->
 <form action = "../process/processCreateAlbum.php" method="post">
 
-Album Name: <br>
+<p>Album Name:</p>
 <input type="text" name="albumName" placeholder="Enter a name for your album!" required><br>
 
-Who can see your album? <br>
+<p>Who can see your album?</p>
 <select name ="privacy">
     <option value = "friends">Friends</option>
     <option value = "circles">Circles</option>
@@ -60,16 +49,15 @@ Who can see your album? <br>
 
 </form>
 
-
 <h2>Upload Photos!</h2>
-
 <!-- Form to allow users to upload photos -->
-<form action="uploadPhotos.php" method="post" enctype="multipart/form-data">
+<form action="../process/processUploadPhotos.php" method="post" enctype="multipart/form-data">
 
-Select an Image: <br>
+<p>Select an Image:</p>
 <input type="file" name = "uploadedimage"><br>
 
-Choose an album for your image: <br>
+<p>Choose an album for your image:</p>
+
 <select name = "albumName">;
 <? getUserAlbumsCB($userID, $link); // displays the photo albums of the currently logged-in user ?>
 </select><br>
@@ -78,20 +66,32 @@ Choose an album for your image: <br>
 
 </form>
 
-
 <h2> Your Albums! </h2>
-
+<!-- buttons for users to select which of their albums they want to display -->
 <form action = "../process/processDisplayAlbum.php" method="post">
 
-<?php getUserAlbumBtns($userID, $link); ?>
+<button type="submit" value="allPhotos" name="albumID">All Albums</button><br>
 
+<?php $userAlbums = getUserAlbumIDs($userID, $link); 
+
+for($i=0; $i<count($userAlbums); $i++) {
+    $albumName = getAlbumNameFromID($userAlbums[$i], $link);
+?>
+    <button type="submit" value="<?php echo $userAlbums[$i]; ?>"name = "albumID"><?php echo $albumName; ?></button>
+<?php
+}
+?>
 </form>
 
 <br>
-<?php displayAllUserPhotos($userID, $link) ?>
-<br>
-<h2> Photos from album </h2>
-<?php displayAlbumPhotos($albumID, $link)?>
+<!-- displays user's albums depending on selection made -->
+<?php
+if(strcmp($albumID, "allPhotos") == 0) {
+    displayAllUserPhotos($userID, $link);
+} else {
+    displayAlbumPhotos($albumID, $link);
+}
+?>
 
 <?php
 mysqli_close($link);
