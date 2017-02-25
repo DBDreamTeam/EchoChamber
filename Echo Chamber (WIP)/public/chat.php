@@ -1,97 +1,15 @@
-<?php include 'connect.php'?>
-
-<?php //include 'processChooseChat.php'?>
-<?php session_start(); ?>
-
-<?php
-mysqli_query($link, "SET SESSION sql_mode = 'STRICT'");
-?>
-
-<?php
-$_SESSION["userID"] = 104;  // to set at login
-$_SESSION["chatID"] = 7;  // to set on select chat page
-?>
+<?php include '../includes/phptop.php';?>
+<?php include '../includes/functions.php';?>
 
 <?php 
-// assigning from session
+// In practice, to be set at login
+$_SESSION["userID"] = 105;
+?>
+
+<?php
 $userID = $_SESSION["userID"];
-$chatID = $_SESSION["chatID"];
 ?>
 
-<?php
-// Displays all members of the chat with specified id 
-function displayChatMembers($IDforChat, $conn) {
-
-    $selectChatMembers = "SELECT users.UserName, chat_members.ChatID FROM users, chat_members WHERE chat_members.ChatID = {$IDforChat} AND users.UserID = chat_members.UserID";
-    
-    $chatMembersResult = mysqli_query($conn, $selectChatMembers);
-    
-    if(mysqli_num_rows($chatMembersResult) > 0) {
-        while($row = mysqli_fetch_assoc($chatMembersResult)) {
-            echo $row["UserName"] . ", ";
-            
-        }
-    }
-}
-?>
-
-<?php
-// Gets the chat title corresponding to the given chat ID
-function getChatTitleFromID($ChatID, $conn) {
-    $selectChatName = "SELECT ChatTitle FROM chat WHERE ChatID = {$ChatID}";
-    
-    $chatNameResult = mysqli_query($conn, $selectChatName);
-    
-    if(mysqli_num_rows($chatNameResult) > 0) {
-        while($row = mysqli_fetch_assoc($chatNameResult)) {
-            $chatTitle = $row["ChatTitle"]; 
-        }
-    }
-    return $chatTitle;
-}
-?>
-
-<?php
-// Gets the username corresponding to the user ID given
-function getUsernameFromID($idUser, $conn) {
-    $username = null;
-    
-    $selectUsername = "SELECT Username FROM users WHERE UserID = {$idUser}";
-    
-    $usernameResult = mysqli_query($conn, $selectUsername);
-    
-    if(mysqli_num_rows($usernameResult) > 0) {
-        while($row = mysqli_fetch_assoc($usernameResult)) {
-            $username = $row["Username"];
-        }
-    }
-    return $username;
-}
-?>
-
-<?php
-// Retrieves messsages for chat id specified 
-function retrieveMessages($idChat, $conn) {
-    $msgArray = array();
-    $i = 0;
-
-    $selectMsgs = "SELECT UserID, Text, Photo, DateTime FROM message WHERE ChatID = {$idChat}";
-    
-    $msgsResult = mysqli_query($conn, $selectMsgs);
-    
-    if(mysqli_num_rows($msgsResult) > 0) {
-        while($row = mysqli_fetch_assoc($msgsResult)) {
-            echo getUsernameFromID($row["UserID"], $conn) . "<br>";
-            echo $row["DateTime"] . "<br>";
-            echo $row["Text"]. "<br>";
-            echo "<br>";
-        }
-    }
-    //print_r($msgArray);
-    return $msgArray;
-}
-?>
-    
 <!DOCTYPE html>
 <html>
 <head>
@@ -101,27 +19,72 @@ function retrieveMessages($idChat, $conn) {
 
 <body>
 
-<h1>Chat!</h1>
+<h1> Welcome to Chat! </h1>
 
-<h2>This is the <?php echo getChatTitleFromID($chatID, $link); ?> chat! </h2>
+<h2> Or continue with an existing one </h2>
 
-<h3> You are chatting to: <?php displayChatMembers($chatID, $link); ?> </h3>
+<?php getUserChatIDs($userID, $link); ?>
+<!-- List of user's existing chats -->
+<form action = "../process/processContinueChat.php" method = "post">
 
-<h2> The Chat! </h2>
+<?php 
+$userChats = getUserChatIDs($userID, $link);
+
+for($i=0; $i<count($userChats); $i++) {
+    $chatName = getChatNameFromID($userChats[$i], $link);
+?>
+
+<input type="checkbox" name="chat" value="<?php echo $userChats[$i]; ?>"><?php echo $chatName;?> <br>
 
 <?php
-// Displays existing messages from the chat
-$msgArray = retrieveMessages($chatID, $link);
+}
+?>
+
+<input type="submit" value = "Continue Chat">
+</form>
+
+<h2> Start a New Chat! </h2>
+<h3> Who would you like to chat to? </h3>
+
+<h2> Chat to friends....</h2>
+
+<!-- List of user's friend -->
+<form action = "../process/processStartChat.php" method = "post">
+
+<?php 
+$userFriends = getFriendIDs($userID, $link); 
+
+for($i=0; $i<count($userFriends); $i++) {
+    $userName = getUsernameFromID($userFriends[$i], $link);
+?>
+    <input type="checkbox" name="friend[]" value="<?php echo $userFriends[$i]; ?>"><?php echo $userName; ?><br>
+<?php
+}
+?>
+
+<h2> Or to one of your circles! </h2>
+<!--List all circle's the user belongs to: -->
+
+<?php
+$userCircles = getUserCircleIDs($userID, $link);
+
+for($i=0; $i<count($userCircles); $i++) {
+    $circleName = getCircleNameFromID($userCircles[$i], $link);
+?>
+
+    <input type = "checkbox" name="circle[]" value="<?php echo $userCircles[$i]; ?>"><?php echo $circleName; ?><br>
+
+<?php
+}
 ?>
 
 
-<h2> Write a message to your friends! </h2>
+<h3> Choose a name for your chat! </h3>
+<input type = "text" name = "chatName" placeholder = "Chat Name"><br>
 
-<form action = "processChatMessage.php" method = "post" id="msgForm">
-    <textarea name="message" form="msgForm" placeholder = "Craft your words here!"></textarea><br>
-    <input type = "submit" value = "Send!">
+<input type = "submit" value = "Start New Chat!">
+
 </form>
-
 
 </body>
 </html>
