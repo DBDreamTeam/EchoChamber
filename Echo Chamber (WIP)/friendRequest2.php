@@ -11,9 +11,9 @@ include 'header.php';
 ?>
 
 
-<html>  
+<html>
 <head>
-	
+
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,22 +38,22 @@ include 'header.php';
     <link rel='stylesheet' type='text/css'
         href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
-    <link href="css/bootstrap-3.3.7.css" rel="stylesheet" type="text/css">	
+    <link href="css/bootstrap-3.3.7.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
 <!-- display list of friend request -->
-Friend request for <?php echo "$currentUser" ?> : 
+Friend request for <?php echo "$currentUser" ?> :
 <br>
 <br>
 
 <table style = "width: 100%">
-    
+
     <!-- tr is the row -->
     <!-- table cell is td -->
     <!-- th is the header -->
-    
-    
+
+
 
     <tr>
         <th> Request From </th>
@@ -68,41 +68,41 @@ $sql = "SELECT * FROM friend_request WHERE user_to = '$currentUser'";
     if (!$result) {
         echo "failed";
     } else {
-        while ($row = $result->fetch_assoc()) {
+      while ($row = $result->fetch_assoc()) {
 			$user_from = $row['user_from'];
 			$user_to = $row['user_to']; ?>
-           
-      
+
+
            	<tr>
             <?php echo '  <td>' . $user_from . '</td>'; ?>
-        
+
             <td><form action="handleFriendRequest.php" method="get">
             <button type="submit" class="acceptFriend" name = "accept">Accept
            	</button>
-			<?php 
+			<?php
 			echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
 			echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
-			echo '  <input type="hidden" name="reject" value="no">'; 
-			echo '  <input type="hidden" name="accept" value= "yes">';	
+			echo '  <input type="hidden" name="reject" value="no">';
+			echo '  <input type="hidden" name="accept" value= "yes">';
 				?>
-           	
+
            	</form></td>
-           	
-           	
+
+
             <td><form action="handleFriendRequest.php" method="get">
 			<button type="submit" class="rejectFriend" name = "reject">Reject</button>
-			<?php 
+			<?php
 			echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
-			echo '  <input type="hidden" name="user_to" value="' . $user_to . '">'; 
-			echo '  <input type="hidden" name="reject" value="yes">'; 
-			echo '  <input type="hidden" name="accept" value= "no">';	
+			echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
+			echo '  <input type="hidden" name="reject" value="yes">';
+			echo '  <input type="hidden" name="accept" value= "no">';
 				?>
            </form></td>
-            
+
 			</tr>
        <?php } ?>
 <?php } ?>
-  
+
 </table>
 
 

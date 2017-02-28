@@ -5,18 +5,40 @@ include 'connect.php';
 $requestFrom = $_GET["user_from"];
 $currentUser = $_GET["user_to"];
 
+//Get the userID
+  $getUserIDSql = "SELECT UserID FROM users WHERE Username ='$requestFrom'";
+  $result = $conn->query($getUserIDSql);
+	if($conn->connect_error){
+		$message = $conn->connect_error;
+	}
+  while($row = $result->fetch_assoc()) {
+    $requestFromUserID = $row['UserID'];
+
+
+  }
+
+//Get the current userID
+	$getUserIDSql2 = "SELECT UserID FROM users WHERE Username ='$currentUser'";
+	$result2 = $conn->query($getUserIDSql2);
+	if($conn->connect_error){
+		$message = $conn->connect_error;
+	}
+	while($row = $result2->fetch_assoc()) {
+	  $currentUserUserID = $row['UserID'];
+	}
+
 $reject = $_GET["reject"];
 $accept = $_GET["accept"];
 
 //perform if accept button is pressed
 if($accept == 'yes') {
-	$acceptFriendQuery = "INSERT INTO friendships (Username, friends_array) VALUES ('$requestFrom', '$currentUser')";
+	$acceptFriendQuery = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$requestFromUserID', '$currentUserUserID')";
 	if ($conn -> query($acceptFriendQuery) === TRUE) {
 	} else {
 		echo "Error: ". $acceptFriendQuery . "<br>" . $conn->error;
 	}
 
-	$acceptFriendQuery2 = "INSERT INTO friendships (Username, friends_array) VALUES ('$currentUser', '$requestFrom')";
+	$acceptFriendQuery2 = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$currentUserUserID', '$requestFromUserID')";
 
 	if ($conn -> query($acceptFriendQuery2) === TRUE) {
 		echo "You are friends now!";
