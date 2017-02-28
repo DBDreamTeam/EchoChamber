@@ -109,4 +109,5 @@ CREATE TABLE `friend_request` (
     `id` int(10) AUTO_INCREMENT NOT NULL,
     `user_from` varchar(255) NOT NULL,
     `user_to` varchar(255) NOT NULL
+    PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
