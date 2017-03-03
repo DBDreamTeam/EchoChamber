@@ -1,6 +1,15 @@
 <?php
 include '../includes/connect.php';
-// phpinfo();
+mysqli_query($link, "SET SESSION sql_mode = 'STRICT'");
+
+ini_set('$file_uploads', 'On');
+
+ /* 
+ Using prepared statements to separate out username & password checking
+ avoids sql injections
+ See: http://php.net/manual/en/mysqli.quickstart.prepared-statements.php, http://stackoverflow.com/questions/8263371/how-can-prepared-statements-protect-from-sql-injection-attacks
+ */
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -10,14 +19,7 @@ session_start();
 
   // username and password sent from form ("posted by form")
 $myusername = $_POST['Username'];
-echo $myusername;
 $mypassword = $_POST['Password'];
-echo $mypassword;
- /* 
- Using prepared statements to separate out username & password checking
- avoids sql injections
- See: http://php.net/manual/en/mysqli.quickstart.prepared-statements.php, http://stackoverflow.com/questions/8263371/how-can-prepared-statements-protect-from-sql-injection-attacks
- */
 
 // First, we check the username match with the prepare statement
 //  If a match is found, we return the result
@@ -31,7 +33,7 @@ $stmt = $link->prepare("SELECT * FROM users WHERE Username = ? LIMIT 1");
 $stmt->bind_param("s", $myusername);
 
 // returns bool to indicate whether execute was ok
-$stmt->execute();
+// $stmt->execute();
 
 // bool check
 if (!($stmt->execute())) {
@@ -42,42 +44,33 @@ if (!($stmt->execute())) {
 $result = $stmt->get_result();
 
 /* explicit close recommended */
-$stmt->close();
+// $stmt->close();
 
 // call function with the saved args to check whether there exist any entries
 if (mysqli_num_rows($result) > 0) {
     
     // add constant time string constraint to avoid password trial hacking 
     $row = mysqli_fetch_assoc($result);
-    
-    echo $row["Password"];
+
 // Gets hash from database, hashes user input and compares the hashes  
 // http://php.net/manual/de/function.password-verify.php
-// online hash generator: http://www.passwordtool.hu/php5-password-hash-generator -> Marisa
-// ($row["Password"] == $mypassword)
+// online hash generator: http://www.passwordtool.hu/php5-password-hash-generator
    
         if  (password_verify($mypassword, $row["Password"])) {
           // registers the session on the specific user
-           $_SESSION['userID'] = $row['UserID'];
+           $_SESSION['UserID'] = $row['UserID'];
             //redirect
             header("Location: https://www.youtube.com/");
         }else { 
             // don't redirect but display same page with error
-           // header("Location: ../public/index.php");
+            header("Location: index.php");
             echo $_SESSION['errorMsg'] = "Wrong Username or Password. Please try again.";
         }
     }
 
 mysqli_close($link);
-?>
 
-<?php
 // value check, need to delete when testing finished
 echo "Post now holds the following values:<br>";
 print_r($_POST);
 ?>
-
-<?//    if (!password_verify($password, $hash)) {
-//    echo 'Invalid password.';
-//    exit;
-//}?>
