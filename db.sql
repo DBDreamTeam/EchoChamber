@@ -70,6 +70,7 @@ CREATE TABLE `comments`(
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added default to current timestamp */
     `Text`      text NOT NULL, /* varchar(6) changed to text */
     `PostID`    int(4) NOT NULL,
+    `isPictures`boolean NOT NULL,
     `UserID`    int(4) NOT NULL,
     PRIMARY KEY (`CommentID`)
 );
