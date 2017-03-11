@@ -1,102 +1,56 @@
 <?php 
 include '../includes/connect.php';
-mysqli_query($link, "SET SESSION sql_mode = 'STRICT'");
+include '../includes/functions.php';
+include '../includes/newFunctions.php';
 
+session_start();
+
+mysqli_query($link, "SET SESSION sql_mode = 'STRICT'");
 ini_set('$file_uploads', 'On');
 ?>
 
 <?php
+// STILL TO DO HEADER FOR REDIRECT TO PROFILE/BLOG PAGE
+header('Location: ../public/choose-your-chamber.php'); 
+?>
+
+<?php
 // Get variables from post
-$username = $_POST["userName"];
+$username = $_POST["firstname"] . " " . $_POST["lastname"];
 $hash = password_hash($_POST["password"], PASSWORD_DEFAULT);
 $email = $_POST["email"];
+$birthday = $_POST["dob"];
 //$password = $_POST["email"];
 
-$birthday = $_POST["year"] . $_POST["month"] . $_POST["day"];
-$year = $_POST["year"];
+//$birthday = $_POST["year"] . $_POST["month"] . $_POST["day"];
+/*$year = $_POST["year"];
 $month = $_POST["month"];
 $day = $_POST["day"];
-$date = $year . "-" . $month . "-" . $day;
+$birthday = $year . "-" . $month . "-" . $day;*/
 
-// Insert image
-function GetImageExtension($imagetype) {
-    if(empty($imagetype)) return false;
-    switch($imagetype) {
-        case 'image/bmp': return '.bmp';
-        case 'image/gif': return '.gif';
-        case 'image/jpeg': return '.jpg';
-        case 'image/png': return '.png';
-        default: return false;
-    }
+
+// Insert user info into users
+$userID = createUser($username, $hash, $email, $birthday, null, $link);
+// Creates a blog for the new user
+$blogID = createBlog(false, 'Profile Pictures', 'Friends', $userID, $link);
+
+// If an image has been uploaded, does the following:
+
+if(!empty($_FILES["uploadedimage"]["name"])) {
+    // Creates an album for the new user and assigns the album ID to $albumID
+    $albumID = insertAlbum('Profile Pictures', $userID, 'Friends', $link);
+    // Inserts the uploaded image into the new album
+    $picID = insertImageNew($albumID, "uploadedimage", $link);
+    // Puts the picID into the users table for the new user
+    updateUsrPicID($userID, $picID, $link);
 }
-if (!empty($_FILES["uploadedimage"]["name"])) {
-echo "here";
-    $file_name=$_FILES["uploadedimage"]["name"];
-    echo $file_name . "<br>";
-    $temp_name=$_FILES["uploadedimage"]["tmp_name"];
-    $imgtype=$_FILES["uploadedimage"]["type"];
-    $ext= GetImageExtension($imgtype);
-    $imagename= $_FILES["uploadedimage"]["name"];
-    $target_path = "images/".$imagename;
-    echo $target_path . "<br>";
-    if(move_uploaded_file($temp_name, $target_path)) {
-        $sql2 = "INSERT INTO pictures (Picture) VALUES ('{$target_path}')"; 
-        $picID = null;
-        $userID = null;
-        
-        // Insert profile picture into pictures
-        if ($link -> query($sql2) === TRUE) {
-            echo "Upload inserted into pictures successfully";
-            $picID = mysqli_insert_id($link);
-            echo "New profile pic has id: " . $picID;
-        } else {
-            echo "Error: ". $sql2 . "<br>" . $link->error;
-        }
-        
-        // Insert user info into users
-        
-        $stmt = $link->prepare("INSERT INTO users (Username, Password, Email, Birthday, PictureID) VALUES (?,?,?,?,?)");
-        $stmt->bind_param("sssss", $username, $hash, $email, $date, $picID);
-        
-       // $sql = "INSERT INTO users (Username, Password, Birthday, PictureID) VALUES ( '{$username}', '{$hash}', '{$date}', '{$picID}')";
-        
-        if ($stmt->execute() === TRUE) {
-                echo "Record inserted into users successfully";
-                $userID = mysqli_insert_id($link);
-                echo "New user has id: " . $userID;
-            } else {
-                echo "Error: ". $sql . "<br>" . $link->error;
-         }
-         
-         // Insert profile picture into photo album
-         $albumInsert = "INSERT INTO albums (OwnerID, AlbumName) VALUE ('{$userID}', 'Profile Pictures')";
-         
-         if ($link -> query($albumInsert) === TRUE) {
-                echo "Record inserted into albums successfully";
-            } else {
-                echo "Error: ". $albumInsert . "<br>" . $link->error;
-         } 
-      
-} else{
-   exit("Error While uploading image on the server");
-}
-}
-?>
-<?
-/* explicit close recommended */
-//$stmt->close();
+
+// Set session variable
+$_SESSION["LoggedUserID"] = $userID;
+$_SESSION["FriendUserID"] = $userID;
+$_SESSION["isGroup"] = 0;
+$_SESSION["BlogID"] = $blogID;
+//echo $_SESSION["LoggedUserID"];
+
 $link -> close();
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Sign Up</title>
-</head>
-
-<body>
-Welcome <?php echo $_POST["email"]; ?><br>
-Your email address is: <?php echo $_POST["email"]; ?>
-</body>
-</html>
