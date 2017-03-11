@@ -1,138 +1,100 @@
-<?php
-include '../includes/connect.php';
-session_start();
-?>
+<?php session_start(); ?>
 
-<!-- DOCTYPE -->
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <title>Echo Chamber Login</title>
+  <head>
     <meta charset="utf-8">
-    <meta name="author" content="DBDreamTeam">
-    <meta name="viewport" content="width=device-width, intial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/custom.css">
-    <!-- Fonts -->
-    <link rel='stylesheet' type='text/css'
-        href='https://fonts.googleapis.com/css?family=Lato:400,700,900,300'>
-    <link rel='stylesheet' type='text/css'
-        href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'>
-    <link rel='stylesheet' type='text/css'
-        href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-</head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>EchoChamber</title>
 
-<!-- Wrapper Start -->
-<div class="wrapper" id="wrapper">
+    <!-- Bootstrap -->
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css?v=<? time(); ?>" rel="stylesheet">
 
-<!-- Header -->
-<header>
-<div class="jumbotron jumbotron-fluid" id="banner">
-<div class="parallax test-centre" style="background-image: url(img/cover.jpg);">
-<div class="parallax-pattern-overlay">
-    <div class="container text-center" style="height: 60px; padding-top=170px;">
-        <a href="#"><img id="site-title" src="img/ECLogo1.png" alt="logo"
-            style="display:block; height:70px; display:inline; position:relative; left:-20px; top:-10px"/></a>
-        <h1 style="display:inline">EchoChamber</h1>
-        <h6 style="display:inline">a social network for people just like you.</h6>
-    </div>
-</div>
-</div>
-</div> <!-- added this in - MN ->
-</header>
-
-<!-- About Us Section -->
-<section class="aboutus" id="aboutus">
-<div class="container">
-    <div class="row" style="padding-top:30px">
-        <div class="col-md-6">
-            <!--
-            <div class="heading text-center">
-            <img class="dividerline" src="img/sep.png" alt="">
-            <h2>About EchoChamber</h2>
-            <img class="dividerline" src="img/sep.png" alt="">
-            -->
-            <p> <b>EchoChamber</b> is the social network for the modern day.
-                Here, you can avoid seeing any views with which you disagree,
-                and bask in just how fabulously <b>right</b> you are about
-                everything. Join groups of like-minded people and while
-                away your days patting each other on the back, reaffirming
-                the views you came here with, and generally just reminding
-                yourself how superior you are to all those other idiots out
-                there. <b>Have fun!</b>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <header id="welcome-banner">
+      <h1><span>Echo</span>Chamber</h1>
+      <h4>a social network for people just like you.</h4>
+  </header>
+  
+  <body>
+    <div class="wrapper">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-5 col-sm-offset-1 col-xs-12" id="intro">
             <p>
-        </div>
-        <div class="col-md-6 text-right">
-            <p style="position:relative; right:10px"><b>Log In</b></p>
-            <form action="../process/login-destination.php" method="post">
-                <label>
-                    Username:
-                    <input type="Username" name="Username">
-                </label>
-                <label>
-                    Password:
-                    <input type="Password" name="Password">
-                </label>
-                <label>
-                    <input type="submit" value="Log In">
-                </label> 
-                <div id="errorMsg">
-            <?php if(!empty($_SESSION['errorMsg'])) { 
-                    echo $_SESSION['errorMsg']; } ?>
-                </div>
-            <?php unset($_SESSION['errorMsg']); ?>
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-3">
-        </div>
-    </div>
-</div>
-</section>
+              <b>EchoChamber</b> is the social network for the modern day.
+              Here, you can avoid seeing any views with which you disagree,
+              and bask in just how fabulously <em>right</em> you are about
+              everything. Join groups of like-minded people and while
+              away your days patting each other on the back, reaffirming
+              the views you came here with, and generally just reminding
+              yourself how superior you are to all those other idiots out
+              there. <b>Have fun!</b>
+            <p>
+          </div>
 
-<!-- Features Section -->
-<section class="features" id="features">
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-        </div>
-    </div>
-</div>
-</section>
+          
+          <div class="col-sm-6 text-right" id="signin">
+            <div class="row">
+              <div class="col-xs-12 col-sm-8 col-sm-offset-4">
+                <form action = "../process/login-destination.php" method="post">
+                  <label>
+                    <input type="email" name="email" placeholder="email">
+                  </label>
+                  <label>
+                    <input type="password" name="password" placeholder="password">
+                  </label>
+                  <label>
+                    <input type="submit" class="btn btn-default" name="submit" value="Log in">
+                  </label>
+                  <div>
 
-<!-- Contact Section -->
-<section class="contact" id="contact">
-<div class="container">
-    <div class="row">
-        <div class="col-lg-12">
+                      <?php if(!empty($_SESSION['errorMsg'])) { 
+                        echo $_SESSION['errorMsg']; } ?>
+                 </div>
+                        <?php unset($_SESSION['errorMsg']); ?>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-sm-8 col-sm-offset-4">
+                <h4>New here?</h4>
+                <form action="../public/register.php" method="post">
+                  <label>
+                    <input type="submit" class="btn btn-default" name="submit" value="Register!">
+                  </label>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-</section>
-
-<!-- Footer -->
-<section class="footer" id="footer">
-<div class="container">
+      
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    
+  </body>
+  
+  <footer>
     <div class="row">
-        <div class="col-lg-12">
-        </div>
+      <div class="col-sm-12 hidden-xs text-right">
+        <p>Copyright DB Dream Team 2017&copy;</p>
+      </div>
     </div>
-</div>
-</section>
-
-<!-- Wrapper End -->
-</div>
+  </footer>
+  
+</html>
