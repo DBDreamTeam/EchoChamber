@@ -105,10 +105,17 @@ CREATE TABLE `chat_members` (
     PRIMARY KEY (`ChatID`, `UserID`)
 );
     
-/* added friend_request table from Mabel's sql */
-CREATE TABLE `friend_request` (
-    `id` int(10) AUTO_INCREMENT NOT NULL,
-    `user_from` varchar(255) NOT NULL,
-    `user_to` varchar(255) NOT NULL,
-    PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+CREATE TABLE `friend_requests` (
+    `id` INT(10) AUTO_INCREMENT NOT NULL, 
+    `user_from` INT(4) NOT NULL, 
+    `user_to` INT(4) NOT NULL, 
+    PRIMARY KEY(`id`), 
+    CONSTRAINT fk_user_from FOREIGN KEY (`user_from`) 
+    REFERENCES users(`UserID`) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE, 
+    CONSTRAINT fk_user_to FOREIGN KEY (`user_to`) 
+    REFERENCES users(`UserID`) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE 
+);
