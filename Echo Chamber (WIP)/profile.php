@@ -2,15 +2,44 @@
 
 session_start();
 
-include 'connect.php';
-include 'header.php';
-include 'function.php';
+include '../includes/connect.php';
+include '../includes/navigation.php';
+include '../includes/functions.php';
 
 ?>
 
+<?
+$LoggedUserID = $_SESSION["LoggedUserID"];
+$user = getUsernameFromID($LoggedUserID, $link);
+$FriendUserID = $_SESSION["FriendUserID"];
+$CheckFriend = getUsernameFromID($FriendUserID, $link);
+
+echo $LoggedUserID; 
+echo $user;
+echo $FriendUserID;
+echo $CheckFriend;
+?>
 
 <html>
-<head>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>EchoChamber</title>
+
+    <!-- Bootstrap -->
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/custom.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -29,7 +58,7 @@ include 'function.php';
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title> Profile </title>
-<link rel='stylesheet' href= 'style.css'/>
+<link rel='stylesheet' href= 'css/style.css'/>
 <!-- Bootstrap CSS -->
     <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
     <link rel="stylesheet" href="css/custom.css">
@@ -41,58 +70,64 @@ include 'function.php';
     <link rel='stylesheet' type='text/css'
         href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
-    <link href="css/bootstrap-3.3.7.css" rel="stylesheet" type="text/css">
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <div>
+
+
+
+
 
   <?php
   //get the userID of current logged user
-    $user = $_SESSION["loggedUser"];
+    /*$user = $_SESSION["loggedUser"];
     $getLoggedUserIDSql = "SELECT UserID FROM users WHERE Username ='$user'";
-    $getLoggedUserIDResult = $conn->query($getLoggedUserIDSql);
+    $getLoggedUserIDResult = $link->query($getLoggedUserIDSql);
     while($row = $getLoggedUserIDResult->fetch_assoc()) {
       $LoggedUserID = $row['UserID'];
-    }
+    }*/
 
   //get the details of friend
-  	$CheckFriend = $_SESSION["friend2"];
+ /* 	$CheckFriend = $_SESSION["friend2"];
   	$getFriendUserIDSql = "SELECT UserID FROM users WHERE Username ='$CheckFriend'";
-    $getFriendUserIDResult = $conn->query($getFriendUserIDSql);
+    $getFriendUserIDResult = $link->query($getFriendUserIDSql);
     while($row = $getFriendUserIDResult->fetch_assoc()) {
       $FriendUserID = $row['UserID'];
-    }
+    }*/
 
   //Check from friendship table to see if they are friends
   $FreindshipTableSql = "SELECT * FROM friendships WHERE UserTwo ='$FriendUserID'";
   $UserTableSql = "SELECT * FROM users WHERE Username ='$CheckFriend'";
-  $FreindshipResult = $conn->query($FreindshipTableSql);
-  $UserTableResult = $conn->query($UserTableSql);
+  $FreindshipResult = $link->query($FreindshipTableSql);
+  $UserTableResult = $link->query($UserTableSql);
   ?>
 
   <?php
   //set session ID for loggedUser and Friend
-  $_SESSION["FriendUserID"] = $FriendUserID;
-  $_SESSION["LoggedUserID"] = $LoggedUserID;
+  //$_SESSION["FriendUserID"] = $FriendUserID;
+  //$_SESSION["LoggedUserID"] = $LoggedUserID;
+  
 
 
   //Query from friendship table to see if two users are friend or not
 	$FreindshipQuery = "SELECT * FROM friendships WHERE UserOne ='$LoggedUserID' AND UserTwo = '$FriendUserID'";
-	$isFriend = $conn->query($FreindshipQuery);
+	$isFriend = $link->query($FreindshipQuery);
 
 
   //find the blogID
     $getBlogIDQuery = "SELECT BlogID FROM blog_wall WHERE IsGroup = '0' AND OwnerID ='$FriendUserID'";
-    $getBlogIDResult = $conn->query($getBlogIDQuery);
+    $getBlogIDResult = $link->query($getBlogIDQuery);
     while($row = $getBlogIDResult->fetch_assoc()) {
       //Store blogID into a variable
       $BlogID = $row['BlogID'];
+      $_SESSION["BlogID"] = $BlogID;
   }
 
   //Store blogID into session variable
-  $_SESSION["BlogID"] = $BlogID;
+
 
   //Check privacy of blog
   $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE BlogID = '$BlogID'";
-  $privacyResult = $conn->query($checkPrivacy);
+  $privacyResult = $link->query($checkPrivacy);
     while($row = $privacyResult->fetch_assoc()) {
       $privacy = $row['Privacy'];
     }
@@ -109,7 +144,7 @@ include 'function.php';
 
   if ($user == $CheckFriend) { ?>
     <!-- https://www.w3schools.com/css/css_form.asp -->
-    <form method = "POST" action = "blog.php">
+    <form method = "POST" action = "../process/blog.php">
       Blog:
       <br>
       <input id = "blogText" type="text" name="blogInput">
@@ -125,7 +160,7 @@ include 'function.php';
 //load the blog wall
 if ($user == $CheckFriend) {
     $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $conn->query($loadBlog);
+    $loadBlogResult = $link->query($loadBlog);
     while($row = $loadBlogResult->fetch_assoc()) {
       echo "Previous Blog: ";
       echo '<br>';
@@ -140,7 +175,7 @@ if ($user == $CheckFriend) {
 if ($privacy == 'Friends') {
   if(mysqli_num_rows($isFriend)>=1){
     $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $conn->query($loadBlog);
+    $loadBlogResult = $link->query($loadBlog);
     while($row = $loadBlogResult->fetch_assoc()) {
       echo "Previous Blog: ";
       echo '<br>';
@@ -153,7 +188,7 @@ if ($privacy == 'Friends') {
   }
 } elseif ($privacy == 'Public') {
     $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $conn->query($loadBlog);
+    $loadBlogResult = $link->query($loadBlog);
     while($row = $loadBlogResult->fetch_assoc()) {
       echo "Previous Blog: ";
       echo '<br>';
@@ -191,7 +226,7 @@ if ($privacy == 'Friends') {
 $loadMem = "SELECT u.Username FROM users u INNER JOIN friendships f
 ON u.UserID = f.UserOne
 WHERE UserTwo ='$FriendUserID'";
-$loadMemResult = $conn->query($loadMem);
+$loadMemResult = $link->query($loadMem);
 
  ?>
 <!-- This shows the user's profile that logged user is looking at -->
@@ -245,15 +280,15 @@ $loadMemResult = $conn->query($loadMem);
 
 				$removeFriend2 = "DELETE FROM friendships WHERE UserTwo = '$LoggedUserID' AND UserOne = '$FriendUserID'";
 
-				if ($conn -> query($removeFriendQuery) === TRUE) {
+				if ($link -> query($removeFriendQuery) === TRUE) {
 				echo " ";
  				} else {
-					echo "Error: ". $removeFriendQuery . "<br>" . $conn->error;
+					echo "Error: ". $removeFriendQuery . "<br>" . $link->error;
         		}
-				if ($conn -> query($removeFriend2) === TRUE) {
+				if ($link -> query($removeFriend2) === TRUE) {
 						echo "Remove successfully";
 						} else {
-							echo "Error: ". $removeFriend2 . "<br>" . $conn->error;
+							echo "Error: ". $removeFriend2 . "<br>" . $link->error;
 				}
 			}
 
@@ -270,11 +305,11 @@ $loadMemResult = $conn->query($loadMem);
 		<?php
 		if(isset($_POST['addFriend'])) {
 			$addFriendQuery = "INSERT INTO friend_request (id,user_from, user_to) VALUES (NULL,'$user', '$CheckFriend')";
-			if ($conn -> query($addFriendQuery) === TRUE) {
+			if ($link -> query($addFriendQuery) === TRUE) {
             echo "Request sent successfully";
 
 			} else {
-            	echo "Error: ". $addFriendQuery . "<br>" . $conn->error;
+            	echo "Error: ". $addFriendQuery . "<br>" . $link->error;
         	}
 		}
 	   ?>
