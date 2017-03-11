@@ -3,9 +3,8 @@
 <head>
 
 <?php
-include 'header.php';
 
-$isGroup = '0';
+include 'header.php';
 
 ?>
 
@@ -43,14 +42,14 @@ $isGroup = '0';
 	<input type="text" name="name"  />
 	<br>
 	<br>
-	Username of the profile that you are visiting:
+  Group name that you are visiting:
 	<br>
-	<input type="text" name="FriendName"  />
-  <br>
-  <br>
-  <input type="submit" name="login" value ="Login"/>
-  <input type="hidden" name="isGroup" value = "0"/>
-  <input type="hidden" name="GroupName" value = "null"  />
+	<input type="text" name="GroupName"  />
+    <br>
+    <br>
+    <input type="submit" name="login" value ="Login"/>
+      <input type="hidden" name="isGroup" value = "1"/>
+      <input type="hidden" name="FriendName" value = "null" />
 </form>
 
 </body>
