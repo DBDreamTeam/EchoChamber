@@ -1131,5 +1131,118 @@ function updateEmail($userID, $newEmail, $conn) {
         echo "Error: ". $stmt. "<br>". $conn->error;
     }
 }
+
+/*
+Gets a list of UserIDs for recommended friends, ordered from best recommnedation to 
+worst, based on the number of common sentiments, mutual friends, and common groups
+between the user passed in, $user_id, and each user in the list.
+*/
+function getFriendRecommendations($user_id) {
+  
+  require_once("local-connect.php");
+  
+  
+  /*
+  Gets a list of the users friends, and those with whom they have a pending
+  friend request. Should be a shorter list to check than a list of non-friends,
+  and thus better for performance at scale.
+  */
+  $friends_sql = "
+      SELECT * FROM users 
+          WHERE UserID = $user_id
+          OR UserID IN
+              (
+              SELECT UserTwo FROM friendships
+                  WHERE UserOne = $user_id
+              )
+          OR UserID IN
+              (
+              SELECT user_to FROM friend_requests
+                  WHERE user_from = $user_id
+              )";
+  
+  /*
+  Gets an ordered list of users who are not the user's friend, and who
+  share the same sentiment about the same entities
+  */
+  $common_sentiments_sql = "
+      SELECT s2.UserID, COUNT(s1.Entity) AS count FROM sentiments AS s1
+          JOIN sentiments AS s2
+          ON s1.Entity = s2.Entity
+          WHERE s1.Sentiment = s2.Sentiment
+          AND s1.UserID <> s2.UserID
+          AND s1.UserID = $user_id
+          AND s2.UserID NOT IN ($friends_sql)
+          GROUP BY s2.UserID
+          ORDER BY count DESC";
+  
+  $common_sentiments_result = $conn->query($common_sentiments_sql);
+  
+  /*
+  Gets an ordered list of users who are not the user's friend, and who
+  have mutual friends with the user
+  */
+  $mutual_friends_sql = "
+      SELECT f2.UserTwo AS UserID, COUNT(f2.UserTwo) AS count FROM friendships AS f1
+          JOIN friendships AS f2
+          ON f1.UserTwo = f2.UserOne
+          WHERE f1.UserOne = $user_id
+          AND f1.UserOne <> f2.UserTwo
+          AND f2.UserTwo NOT IN ($friends_sql)
+          GROUP BY f2.UserTwo
+          ORDER BY count";
+  
+  $mutual_friends_sql = $conn->query($mutual_friends_sql);
+  
+  /*
+  Gets an ordered list of users who are not the user's friend, and who
+  are members of the same groups as the user
+  */
+  $common_circles_sql = "
+      SELECT g2.UserID, COUNT(g2.UserID) AS count FROM group_members AS g1
+          JOIN group_members AS g2
+          ON g1.GroupID = g2.GroupID
+          WHERE g1.UserID = 1
+          AND g1.UserID <> g2.UserID
+          AND f2.UserID NOT IN ($friends_sql)
+          GROUP BY g2.UserID
+          ORDER BY count";
+  
+  $common_circles_result = $conn->query($common_circles_sql);
+  
+  /*
+  Creates an array with UserIDs as keys, and a value representing how
+  good a recommendation they are as values. These values are based on the
+  number of common sentiments, mutual friends, and common circles.
+  */
+  $recommended_friends = array();
+  // Add values for common entities
+  while ($row = $common_entities_result->fetch_assoc()) {
+    $recommended_friends[$row['UserID']] = $row['count'] * 10;
+  }
+  // Add values for mutual friends
+  while ($row = $mutual_friends_result->fetch_assoc()) {
+    if (isset($recommended_friends[$row['UserID']])) {
+      $recommended_friends[$row['UserID']] += $row['count'];
+    } else {
+      $recommended_friends[$row['UserID']] = $row['count'];
+    }
+  }
+  // Add values for common circles
+  while ($row = $common_circles_result->fetch_assoc()) {
+    if (isset($recommended_friends[$row['UserID']])) {
+      $recommended_friends[$row['UserID']] += $row['count'];
+    } else {
+      $recommended_friends[$row['UserID']] = $row['count'];
+    }
+  }
+  
+  // Sort the array according to the final values
+  arsort($recommended_friends);
+  
+  // Return the ordered list of UserIDs
+  return array_keys($recommended_friends);
+  
+}
     
 ?>
