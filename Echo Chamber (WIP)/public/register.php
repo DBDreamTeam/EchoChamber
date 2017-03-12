@@ -39,7 +39,7 @@
     
     <div class="row">
       <div class="col-xs-4 col-xs-offset-4">
-        <form action="../process/processRegistration.php" method="post" class="signup-form">
+        <form action="../process/processRegistration.php" method="post" class="signup-form" enctype="multipart/form-data">
           <div class="form-group">
             <label for="firstname">First Name:</label>
             <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Mark">
@@ -60,7 +60,10 @@
             <label for="password">Password:</label>
             <input type="password" class="form-control" id="password" name="password">
           </div>
-          
+          <div class="form-group">
+            <label for="file">Profile Pic:</label>
+            <input type="file" name = "uploadedimage"><br>
+          </div>
           <button type="submit" class="btn btn-default">Sign Up!</button>
         </form>
       </div>

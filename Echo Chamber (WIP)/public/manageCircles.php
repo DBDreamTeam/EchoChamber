@@ -1,30 +1,24 @@
 <?php 
-include '../includes/phptop.php';
+include '../includes/connect.php';
 include '../includes/functions.php';
+session_start();
 ?>
 
-<?php 
-// In practice, to be set at login
-$_SESSION["userID"] = 105;
+<? // get session variables
+$userID = $_SESSION["LoggedUserID"];
 ?>
 
-<?php
-$userID = $_SESSION["userID"];
-?>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Circles</title>
+<title>Manage Circles</title>
 </head>
 
 <body>
 
-
-
-
-<h1>Circles!</h1>
+<h1>Manage Circles</h1>
 
 <?php include '../includes/navigation.php';?>
 
@@ -54,34 +48,6 @@ $userID = $_SESSION["userID"];
     <input type="file" name = "uploadedimage"><br><br>
     
     <input type = "submit" value = "Create circle!">
-</form>
-
-
-<h2>Your Circles!</h2>
-
-<?php getCircles($userID, $link); ?>
-
-<h2>You might also be interested in...</h2>
-<!--Lists circles with privacy 'Friends' and 'FriendsOfFriends'-->
-
-<form action="blog.php" method="post">
-
-<?php 
-$fOfFCircles = getFOfFCircles($userID, $link); 
-for($i=0; $i<count($fOfFCircles); $i++) {
-    $circleName = getCircleNamefromID($fOfFCircles[$i], $link);
-    echo "<button type=\"submit\" name=\"circleID\" value =\"{$fOfFCircles[$i]}\">{$circleName}</button><br>";
-}
-
-$friendsCircles = getFriendsCircles($userID, $link);
-for($j=0; $j<count($friendsCircles); $j++) {
-    $circleName = getCircleNamefromID($friendsCircles[$j], $link);
-    echo "<button type=\"submit\" name=\"circleID\" value =\"{$friendsCircles[$i]}\">{$circleName}</button><br>";
-}
-
-?>
-
-
 </form>
 
 </body>

@@ -1,41 +1,21 @@
-<?php include '../includes/phptop.php';?>
-<?php include '../includes/functions.php';?>
+<?php 
+include '../includes/connect.php';
+include '../includes/functions.php';
+session_start();
+?>
 
 <?php 
 // In practice, to be set at login
-$_SESSION["userID"] = 105;
+//$_SESSION["userID"] = 105;
 ?>
 
 <?php
-$userID = $_SESSION["userID"];
+$userID = $_SESSION["LoggedUserID"];
 $albumID = $_SESSION["albumID"]; // $albumID should be set to "allAlbums" at start of session
 //echo $albumID;
 
 ?>
 
-<?php 
-// returns an array containing the album IDs of the specified user
-function getUserAlbumsArr($userID, $conn) {
-    $userAlbums = array();
-    $i=0;
-    
-    $stmt = $conn->prepare("SELECT AlbumID FROM albums WHERE OwnerID = ?");
-    $stmt->bind_param("i", $userID);
-    
-    if($stmt->execute() === TRUE) {
-        $result = $stmt->get_result();
-        while($row = $result->fetch_assoc()) {
-            $userAlbums[$i] = $row['AlbumID'];
-            $i++;
-        }
-    }
-    echo "Albums for user {$userID} <br>:";
-    print_r($userAlbums);
-    echo "<br>";
-    return $userAlbums;
-}
-
-?>
 
 <!DOCTYPE html>
 <html>
@@ -48,35 +28,49 @@ function getUserAlbumsArr($userID, $conn) {
 
 </head>
 
-<?php
-function getAlbumPrivacySettings($albumID, $conn) {
-    $privacy = null;
-    
-    $stmt = $conn->prepare("SELECT Privacy FROM albums WHERE AlbumID = ?");
-    $stmt->bind_param("i", $albumID);
-    
-    if($stmt->execute() === TRUE) {
-        $result = $stmt->get_result();
-        
-        if(mysqli_num_rows($result) >0) {
-            $row = mysqli_fetch_assoc($result);
-            $privacy = $row["Privacy"];
-            echo $privacy;
-        }
-    } else {
-        echo "Error: ". $stmt. "<br>" . $conn->error;
-    }
-    return $privacy;
-}
-?>
-
 <body>
 
-<?php
-getAlbumPrivacySettings(1, $link);
-?>
-
 <h1>Manage Photos</h1>
+
+<?php include '../includes/navigation.php'?>
+
+
+<h2>Create an Album</h2>
+<!-- Form to create a new album-->
+<form action = "../process/processCreateAlbum.php" method="post">
+
+<p>Album Name:</p>
+<input type="text" name="albumName" placeholder="Enter a name for your album!" required><br>
+
+<p>Who can see your album?</p>
+<select name ="privacy">
+    <option value = "friends">Friends</option>
+    <option value = "circles">Circles</option>
+    <option value = "friendsOfFriends">Friends of Friends</option>
+    <option value = "public">Public</option>
+</select><br>
+
+<input type="submit" value = "Create Album!">
+
+</form>
+
+<h2>Upload Photos!</h2>
+<!-- Form to allow users to upload photos -->
+<form action="../process/processUploadPhotos.php" method="post" enctype="multipart/form-data">
+
+<p>Select an Image:</p>
+<input type="file" name = "uploadedimage"><br>
+
+<p>Choose an album for your image:</p>
+
+<select name = "albumName">;
+<? getUserAlbumsCB($loggedUser, $link); // displays the photo albums of the currently logged-in user ?>
+</select><br>
+
+<input type = "submit" value = "Upload Now!"><br>
+
+</form>
+
 
 <h2>Manage Existing Albums</h2>
 <h3>Delete or Rename your Albums, or Adjust Privacy Settings</h3>
