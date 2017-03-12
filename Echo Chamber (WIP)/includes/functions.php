@@ -54,10 +54,10 @@ function insertMessage($ChatID, $UserID, $MsgContent, $MsgPic, $conn) {
 }
 
 // Inserts new entry into groups table
-function insertGroup ($idBlog, $groupName, $groupPicID, $groupPrivacy, $conn) {
+function insertGroup ($groupName, $groupPicID, $groupPrivacy, $conn) {
     $groupID = null;
 
-    $insertGroup = "INSERT INTO groups (BlogID, Name, PictureID, Privacy) VALUE ({$idBlog}, '{$groupName}', {$groupPicID},'{$groupPrivacy}')";
+    $insertGroup = "INSERT INTO groups (Name, PictureID, Privacy) VALUE ('{$groupName}', {$groupPicID},'{$groupPrivacy}')";
     
     if($conn -> query($insertGroup) === TRUE) {
         echo "New circle inserted into groups sucessfully <br>";
@@ -117,6 +117,21 @@ function getAlbumNameFromID($albumID, $conn) {
     return $albumName;
 }
 
+// Get album name from album ID - UNUSED
+/*function getAlbumName($albumID, $conn) {
+    $albumName = null;
+    $selectAlbumName = "SELECT AlbumName FROM albums WHERE albumID = '{$albumID}'";
+    
+    $albumNameResult = mysqli_query($conn, $selectAlbumName);
+    
+    if(mysqli_num_rows($albumNameResult) >0) {
+        $row = mysqli_fetch_assoc($albumNameResult);
+        $albumName = $row["AlbumName"];
+    }
+    return $albumName;
+}*/
+
+// gets the name of a chat from its ID
 function getChatNameFromID($chatID, $conn) {
     $chatName = null;
     
@@ -149,6 +164,7 @@ function getCircleNamefromID($circleID, $conn) {
     return $circleName;
 }
 
+// used within another function
 function getImagePathFromID($imageID, $conn) {
     $imagePath = null;
     $selectImagePath = "SELECT Picture FROM pictures WHERE PictureID = {$imageID}";
@@ -249,8 +265,8 @@ function getUserChatIDs($userID, $conn) {
     return $chatArray;
 }
 
-// gets Album IDs for users albums
-function getUserAlbumIDs($userID, $conn) {
+// gets Album IDs for users albums - NOT USED
+/*function getUserAlbumIDs($userID, $conn) {
     $userAlbumArray = array();
     $i = 0;
     
@@ -265,7 +281,7 @@ function getUserAlbumIDs($userID, $conn) {
         }
     }
     return $userAlbumArray;
-}
+}*/
 
 // gets all the circles the specified user belongs to displays them as links (to the circle blog or profile page - tbc) onto the page
 function getCircles($idUser, $conn) {
@@ -281,7 +297,8 @@ function getCircles($idUser, $conn) {
     }
 }
 
-function getUserAlbumBtns($userID, $conn) {
+// -- NOT USED --//
+/*function getUserAlbumBtns($userID, $conn) {
     $selectAlbums = "SELECT AlbumName, AlbumID FROM albums WHERE OwnerID = {$userID}";
 
     $albumsResult = mysqli_query($conn, $selectAlbums);
@@ -296,10 +313,10 @@ function getUserAlbumBtns($userID, $conn) {
     } else {
         echo "No albums yet.";
     }
-}
+}*/
 
-
-function displayAllUserPhotos($userID, $conn) {
+// -- NOT USED -- //
+/*function displayAllUserPhotos($userID, $conn) {
     $selectAllPics = "SELECT pictures.Picture, pictures.AlbumID, pictures.PictureID FROM pictures, albums WHERE pictures.AlbumID = albums.AlbumID AND albums.OwnerID = {$userID}";
     
     $allPicsResult = mysqli_query($conn, $selectAllPics);
@@ -314,7 +331,7 @@ function displayAllUserPhotos($userID, $conn) {
             $i++;
         }
     }
-}
+}*/
 
 function displayAlbumPhotos($albumID, $conn) {
     $selectAlbumPics = "SELECT pictures.Picture, pictures.PictureID FROM pictures WHERE pictures.AlbumID = {$albumID}";
@@ -474,8 +491,7 @@ function combineAllChatMembers($indIDs, $circleIDs, $userID) {
 
 // FUNCTIONS TO UPLOAD AN IMAGE (TO BE REWRITTEN)
 
-// Gets extension of uploaded image
-// REF: ....
+// Gets extension of uploaded image -- used within another function
 function GetImageExtension($imagetype) {
     if(empty($imagetype)) return false;
     switch($imagetype) {
@@ -488,7 +504,40 @@ function GetImageExtension($imagetype) {
 }
 
 
-function insertImagePlus($albumID, $conn) {
+// inserts an uploaded image into the pictures table
+function insertImageNew($albumID, $uploadName, $conn) {
+    $imageID = 0;
+        
+    if (!empty($_FILES[$uploadName]["name"])) {
+
+        $file_name=$_FILES[$uploadName]["name"];
+        $tempName=$_FILES[$uploadName]["tmp_name"];
+        $tempName=$_FILES[$uploadName]["tmp_name"];
+        $imgtype=$_FILES[$uploadName]["type"];
+        $ext= GetImageExtension($imgtype);
+        $imagename= $_FILES[$uploadName]["name"];
+        $targetPath = "images/".$imagename;
+        //echo $targetPath . "<br>";
+    
+        // uploades image
+        if(move_uploaded_file($tempName, $targetPath)) {
+            $insertImage = "INSERT INTO pictures (Picture, AlbumID) VALUE ('{$targetPath}', {$albumID})";
+
+            if($conn-> query($insertImage) === TRUE) {
+                echo "New image successfullly inserted into pictures <br>";
+                $imageID = mysqli_insert_id($conn);
+            } else {
+                echo "Error: ". $insertImage. "<br>". $conn->error;
+            }
+        } else {
+            exit("Error while uplaoding image on server");
+        }
+    }
+    return $imageID;
+}
+    
+// -- NOT USED - replaced by insertImageNew() -- //
+/* function insertImagePlus($albumID, $conn) {
     $imageID = null;
     $tempName = getTempName();
     echo $tempName;
@@ -501,10 +550,11 @@ function insertImagePlus($albumID, $conn) {
         exit("Error while uplaoding image on server");
     }
     return $imageID;
-}
+}*/
 
+// -- NOT USED - replaced by insertImageNew() --//
 // inserts an image into the pictures table and returns the PictureID
-function insertImage($imagePath, $albumID, $conn) {
+/*function insertImage($imagePath, $albumID, $conn) {
     $imageID = null;
     
     $insertImage = "INSERT INTO pictures (Picture, AlbumID) VALUE ('{$imagePath}', {$albumID})";
@@ -516,11 +566,11 @@ function insertImage($imagePath, $albumID, $conn) {
         echo "Error: ". $insertImage. "<br>". $conn->error;
     }
     return $imageID;
-}
+}*/
 
+// -- NOT USED - replaced by insertImageNew() --//
 // gets the target path of an uploaded image
-// REF: TO REFIND
-function getTargetPath() {
+/*function getTargetPath() {
     $targetPath = null;
     if (!empty($_FILES["uploadedimage"]["name"])) {
 
@@ -534,10 +584,10 @@ function getTargetPath() {
         echo $targetPath . "<br>";
     }
     return $targetPath;
-}
+}*/
 
+// -- NOT USED -- replaced by insertImageNew() --//
 // get the temp name of the uploaded image
-// REF: TO FIND AGAIN
 function getTempName() {
     $tempName = null;
     if (!empty($_FILES["uploadedimage"]["name"])) {
@@ -547,6 +597,539 @@ function getTempName() {
     return $tempName;
 }
 
+// Displays all members of the chat with specified id 
+function displayChatMembers($IDforChat, $userID, $conn) {
+
+    $selectChatMembers = "SELECT users.UserName, users.UserID, chat_members.ChatID FROM users, chat_members WHERE chat_members.ChatID = {$IDforChat} AND users.UserID = chat_members.UserID";
+    
+    $chatMembersResult = mysqli_query($conn, $selectChatMembers);
+    
+    if(mysqli_num_rows($chatMembersResult) > 0) {
+        while($row = mysqli_fetch_assoc($chatMembersResult)) {
+            if($row["UserID"] != $userID) {
+                echo $row["UserName"] . ", ";
+            }
+        }
+    }
+}
+
+// Retrieves messsages for chat id specified 
+function retrieveMessages($idChat, $conn) {
+    $msgArray = array();
+    $i = 0;
+
+    $selectMsgs = "SELECT UserID, Text, Photo, DateTime FROM message WHERE ChatID = {$idChat}";
+    
+    $msgsResult = mysqli_query($conn, $selectMsgs);
+    
+    if(mysqli_num_rows($msgsResult) > 0) {
+        while($row = mysqli_fetch_assoc($msgsResult)) {
+            echo getUsernameFromID($row["UserID"], $conn) . "<br>";
+            echo $row["DateTime"] . "<br>";
+            echo $row["Text"]. "<br>";
+            
+            if($row["Photo"] != null) {
+                echo "<img src = \"../process/" . getImagePathFromID($row["Photo"], $conn) . "\" width=\"200\" height=\"200\"> <br>";
+            }
+            echo "<br>";
+        }
+    }
+    //print_r($msgArray);
+    return $msgArray;
+}
+
+function getAllUsers($conn) {
+    $allUsersArr= array();
+    $i = 0;
+    
+    $allUsers = "SELECT UserID FROM users";
+    $result = mysqli_query($conn, $allUsers);
+    
+    if(mysqli_num_rows($result)>0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $allUsersArr[$i] = $row["UserID"];
+            $i++;
+        }
+    }
+    //print_r($allUsersArr);
+    return $allUsersArr;
+}
+
+// returns an array containing the album IDs of the specified user
+function getUserAlbumsArr($userID, $conn) {
+    $userAlbums = array();
+    $i=0;
+    
+    $stmt = $conn->prepare("SELECT AlbumID FROM albums WHERE OwnerID = ?");
+    $stmt->bind_param("i", $userID);
+    
+    if($stmt->execute() === TRUE) {
+        $result = $stmt->get_result();
+        while($row = $result->fetch_assoc()) {
+            $userAlbums[$i] = $row['AlbumID'];
+            $i++;
+        }
+    }
+    echo "Albums for user {$userID} <br>:";
+    print_r($userAlbums);
+    echo "<br>";
+    return $userAlbums;
+}
 
 
+function getAlbumPrivacySettings($albumID, $conn) {
+    $privacy = null;
+    
+    $stmt = $conn->prepare("SELECT Privacy FROM albums WHERE AlbumID = ?");
+    $stmt->bind_param("i", $albumID);
+    
+    if($stmt->execute() === TRUE) {
+        $result = $stmt->get_result();
+        
+        if(mysqli_num_rows($result) >0) {
+            $row = mysqli_fetch_assoc($result);
+            $privacy = $row["Privacy"];
+            echo $privacy;
+        }
+    } else {
+        echo "Error: ". $stmt. "<br>" . $conn->error;
+    }
+    return $privacy;
+}
+
+// gets Album IDs for users albums
+function getAccessibleAlbumIDs($loggedUser, $pageOwner, $conn) {
+    $albumArray = array();
+    $i = 0;
+
+    // check user relationship
+    $isPageOwner = isPageOwner($loggedUser, $pageOwner, $conn);
+    //echo "page owner: " . $isPageOwner . "<br>";
+    $isFriends = isFriends($loggedUser, $pageOwner, $conn);
+   // echo "is friends: " . $isPageOwner . "<br>";
+    $isFriendOfFriend = isFriendOfFriend($loggedUser, $pageOwner, $conn);
+    //echo "isFriendOfFriend" . $isFriendOfFriend . "<br>";
+    $inSameCircle = inSameCircle($loggedUser, $pageOwner, $conn);
+    
+    $selectAlbums = "SELECT AlbumID, Privacy FROM albums WHERE OwnerID = {$pageOwner}";
+    
+    $albumsResult = mysqli_query($conn, $selectAlbums);
+    
+    if(mysqli_num_rows($albumsResult)>0) {
+        while($row= mysqli_fetch_assoc($albumsResult)) {
+        
+            //echo "Album privacy: " . $row["Privacy"] . "<br>";
+            if(($isPageOwner == 1) 
+                || (($row["Privacy"] == "Circles") && ($inSameCircle == 1))
+                || (($row["Privacy"] == "FriendsOfFriends") && (($isFriendOfFriend == 1)|| ($isFriends == 1)))
+                || (($row["Privacy"] == "Friends") && ($isFriends == 1))
+                || ($row["Privacy"] == "Public")){
+                    
+                $albumArray[$i] = $row["AlbumID"];
+                $i++;
+                //echo "AlbumID added to album <br>";
+            } else {
+               // $i++;
+            }
+        }
+    }
+    //echo "Accessible albums: <br>";
+    //print_r($albumArray);
+    //echo "<br>";
+    return $albumArray;
+}
+
+function displayAllAccessiblePhotos($loggedUser, $pageOwner, $conn) {
+    $i = 0;
+
+    // checks relationship between users
+    $isPageOwner = isPageOwner($loggedUser, $pageOwner, $conn);
+    //echo "page owner: " . $isPageOwner . "<br>";
+    $isFriends = isFriends($loggedUser, $pageOwner, $conn);
+    //echo "is friends: " . $isPageOwner . "<br>";
+    $isFriendOfFriend = isFriendOfFriend($loggedUser, $pageOwner, $conn);
+    //echo "isFriendOfFriend" . $isFriendOfFriend . "<br>";
+    $inSameCirlce = inSameCircle($loggedUser, $pageOwner, $conn);
+
+    // gets pics from db
+    $selectAllPics = "SELECT pictures.Picture, pictures.AlbumID, pictures.PictureID, albums.Privacy FROM pictures, albums WHERE pictures.AlbumID = albums.AlbumID AND albums.OwnerID = {$pageOwner}";
+
+    $allPicsResult = mysqli_query($conn, $selectAllPics);
+    
+    if(mysqli_num_rows($allPicsResult) > 0) {
+        while($row = mysqli_fetch_assoc($allPicsResult)) {
+             if(($isPageOwner == 1) 
+                || ($row["Privacy"] == "Public") 
+                || (($row["Privacy"] == "Friends") AND ($isFriends == 1))
+                || (($row["Privacy"] == "FriendsOfFriends") && ($isFriendOfFriend == 1))
+                || (($row["Privacy"] == "Circle") && ($inSameCircle == 1))) {
+                        echo "<img src = \"../process/" . $row["Picture"] . "\" width=\"200\" height=\"200\" id=\"" . $row["PictureID"] . "\"> <br>";
+                        printComments($row["PictureID"], $conn);
+                        printCommentForm($row["PictureID"], $i);
+                        $i++;
+            }
+        }
+    }
+}
+
+function insertComment($userID, $commentText, $postID, $conn) {
+    $insertComment = "INSERT INTO comments (Text, UserID, PostID) VALUES ('{$commentText}', {$userID}, {$postID})";
+
+    if ($conn -> query($insertComment) === TRUE) {
+        echo "Inserted comment text and userID into comments table successfully";
+
+    } else {
+        echo "Error: ". $insertComment . "<br>" . $conn->error;
+    }
+}
+// creates new blog for user or group
+function createBlog($isGroup, $privacy, $ownerID, $conn) {
+    
+    $insertBlog = "INSERT INTO blog_wall (IsGroup, Privacy, OwnerID) VALUES ('{$isGroup}', '{$privacy}', {$ownerID})";
+    
+     if ($conn -> query($insertBlog) === TRUE) {
+        echo "Message inserted into messages successfully <br>";
+    } else {
+        echo "Error: ". $insertBlog . "<br>" . $conn->error;
+    }
+}
+
+// inserts user into users table
+function createUser($username, $hash, $email, $birthday, $picID, $conn) {
+    $userID = 0;
+    $stmt = $conn->prepare("INSERT INTO users (Username, Password, Email, Birthday, PictureID) VALUES (?,?,?,?,?)");
+    $stmt->bind_param("sssss", $username, $hash, $email, $birthday, $picID);
+
+    if ($stmt->execute() === TRUE) {
+            echo "Record inserted into users successfully <br>";
+            $userID = mysqli_insert_id($conn);
+            echo "New user has id: {$userID} <br>" ;
+        } else {
+            echo "Error: ". $stmt . "<br>" . $conn->error;
+     }
+     return $userID;
+}
+
+// updates id of user profile pic
+function updateUsrPicID($userID, $picID, $conn) {
+
+    $stmt = $conn->prepare("UPDATE users SET PictureID = ? WHERE UserID = ?");
+    $stmt->bind_param("ii", $picID, $userID);
+    
+    
+    if($stmt->execute() === TRUE) {
+        echo "User picID successfully updated <br>";
+    } else {
+        echo "Error: " . $stmt . "<br>" . $conn->error;
+    }
+}
+
+function deleteAlbum($albumID, $conn) {
+
+    // delete all images in specified album (i.e. delete all images from pictures with album ID specified)
+    $deleteImg = $conn->prepare("DELETE FROM pictures WHERE AlbumID = ?");
+    $deleteImg->bind_param("i", $albumID);
+    
+    if ($deleteImg->execute() === TRUE) {
+            echo "Pictures from {$albumID} successfully deleted from pictures <br>";
+        } else {
+            echo "Error: ". $deleteImg . "<br>" . $conn->error;
+     }
+     
+    // deletes album of specified ID from albums
+    $stmt = $conn->prepare("DELETE FROM albums WHERE AlbumID = ?");
+    $stmt->bind_param("i", $albumID);
+    
+    if ($stmt->execute() === TRUE) {
+            echo "Album {$albumID} successfully deleted from albums <br>";
+        } else {
+            echo "Error: ". $stmt . "<br>" . $conn->error;
+     }
+}
+
+// updatees the new of an album
+function updateAlbumName($albumID, $newAlbumName, $conn) {
+    $stmt = $conn->prepare("UPDATE albums SET AlbumName = ? WHERE AlbumID = ?");
+    $stmt->bind_param("si", $newAlbumName, $albumID);
+    
+    if($stmt->execute() === TRUE) {
+        echo "Album name for {$albumID} successfully changed";
+    } else {
+        echo "Error: " . $stmt . "<br>" . $conn->error;
+    }
+}
+
+// updates the privacy value of an album
+function updateAlbumPrivacy($albumID, $newPrivacy, $conn) {
+
+    $stmt = $conn->prepare("UPDATE albums SET Privacy = ? WHERE AlbumID = ?");
+    $stmt->bind_param("si", $newPrivacy, $albumID);
+    
+    if($stmt->execute() === TRUE) {
+        echo "Privacy of album {$albumID} successfully updated <br>";
+    } else {
+        echo "Error: " . $stmt . "<br>" . $conn->error;
+    }
+}
+
+
+// Gets friends of friends of user of specified ID and returns an array of user IDs of these friends of friends
+function getFriendsOfFriends($userID, $conn) {
+    $friendsOfFriends = array();
+    $j= 0;
+    
+    $friends = getFriendsArr($userID, $conn);
+
+    for($i=0; $i<count($friends); $i++) {
+        $selectFOfF = "SELECT UserTwo FROM friendships WHERE UserOne = {$friends[$i]}";
+        
+        $fOfFResult = mysqli_query($conn, $selectFOfF);
+        
+        if(mysqli_num_rows($fOfFResult) > 0) {
+            while($row=mysqli_fetch_assoc($fOfFResult)) {
+                $friendsOfFriends[$j] = $row["UserTwo"];
+                $j++;
+            }
+        }
+    }
+    //echo "Friends of friends: <br>";
+    //print_r($friendsOfFriends);
+    //echo "<br>";
+    return $friendsOfFriends;
+}
+
+// Gets all friends of user of specified ID and returns an array of the user IDs of these friends
+function getFriendsArr($userID, $conn) {
+    $friendsArray = array();
+    $i = 0;
+
+    $selectFriends = "SELECT friendships.UserTwo, users.Username FROM friendships, users WHERE friendships.UserOne = {$userID} AND users.UserID = friendships.UserTwo";
+    
+    $friendsResult = mysqli_query($conn, $selectFriends);
+    
+    if(mysqli_num_rows($friendsResult) > 0) {
+        while ($row = mysqli_fetch_assoc($friendsResult)) {
+            $friendsArray[$i] = $row["UserTwo"];
+            $i++;
+        }
+    }
+    return $friendsArray;
+}
+
+function getFOfFCircles($userID, $conn) {
+    $fOfFCirclesArr = array();
+    $i = 0;
+    
+    // gets array of friends of friends of the user
+    $friendsOfFriends = getFriendsOfFriends($userID, $conn);
+    
+    for($j=0; $j<count($friendsOfFriends); $j++) {
+        // gets IDs of circles of each friend of friends
+        $fOfFCircles = getUserCircleIDs($friendsOfFriends[$j], $conn);
+        //echo "Friends of friends circles: <br>";
+        //print_r($fOfFCircles);
+        //echo "<br>";
+        
+        for($k=0; $k<count($fOfFCircles); $k++) {
+        
+            $getFFCircles = "SELECT GroupID FROM groups WHERE Privacy = 'FriendsOfFriends' AND GroupID = {$fOfFCircles[$k]}";
+        
+            $getFFCirclesResult = mysqli_query($conn, $getFFCircles);
+        
+            if(mysqli_num_rows($getFFCirclesResult) >0) {
+                while ($row = mysqli_fetch_assoc($getFFCirclesResult)) {
+                    if(!(in_array($row["GroupID"], $fOfFCirclesArr))){
+                        $fOfFCirclesArr[$i] = $row["GroupID"];
+                        $i++;
+                    }
+                }
+            }
+        }
+    }
+   // echo "Friends of friends circles <br>";
+   // print_r($fOfFCirclesArr);
+   // echo "<br>";
+    return $fOfFCirclesArr;
+}
+
+function getFriendsCircles($userID, $conn) {
+    $friendsCirclesArray = array();
+    $i = 0;
+    
+    $friends = getFriendsArr($userID, $conn);
+    //echo "User's friends: <br>";
+    //print_r($friends);
+    //echo "<br>";
+    
+    for($j=0; $j<count($friends); $j++) {
+    
+        $friendCircles = getUserCircleIDs($friends[$j], $conn);
+        //echo "friend's circles {$j} <br>";
+        //print_r($friendCircles);
+        //echo "<br>";
+        
+        for($k=0; $k<count($friendCircles); $k++) {
+        
+            $getFriendCircles = "SELECT GroupID FROM groups WHERE Privacy = 'Friends' AND GroupID = {$friendCircles[$k]}";
+            
+            $result = mysqli_query($conn, $getFriendCircles);
+            
+            if(mysqli_num_rows($result) >0) {
+                while($row = mysqli_fetch_assoc($result)) {
+                    if(!(in_array($row["GroupID"], $friendsCirclesArray))){
+                        $friendsCirclesArray[$i] = $row["GroupID"];
+                        $i++;
+                    }
+                }
+            }
+        }
+    }
+    //echo "Arrays with privacy friends <br>";
+    //print_r($friendsCirclesArray);
+    //echo "<br>";
+    return $friendsCirclesArray;  
+}
+
+// -- NOT SURE IF THIS IS USED --//
+function getAllAccCircles($userID, $conn) {
+    $allCircles = array();
+    $i = 0;
+    
+    $friendsOfFriendsC = getFOfFCircles($userID, $conn);
+    $friendsC = getFriendsCircles($userID, $conn);
+    
+    for($j=0; $j<count($friendsOfFriendsC); $j++) {
+        $allCircles[$i] = $friendsOfFriendsC[$j];
+        $i++;
+    }
+    
+    for($k=0; $k<count($friendsC); $k++) {
+        if(!(in_array($friendsC[$k], $allCircles))) {
+            $allCircles[$i] = $friendsC[$k];
+            $i++;
+        }
+    }
+    //echo "All circles <br>";
+    //print_r($allCircles);
+   // echo "<br>";
+    return $allCircles;
+}
+
+// =============FUNCTIONS CHECKING RELATIONSHIP BETWEEN USERS=================== //
+
+function isFriends($loggedUser, $pageOwner, $conn) {
+    $isFriends = false;
+    $stmt = $conn->prepare("SELECT UserOne, UserTwo FROM friendships WHERE UserOne = ? AND UserTwo = ?");
+    $stmt->bind_param("ii", $loggedUser, $pageOwner);
+    
+    if($stmt->execute()) {
+        //echo "Query to friendships tables successfully performed <br>";
+        $result = $stmt->get_result();
+        
+        if(mysqli_num_rows($result) <= 0) {
+            $isFriends = false;
+        } else{
+            $isFriends = true;
+        }
+    }
+    return $isFriends;
+}
+
+function inSameCircle($loggedUser, $pageOwner, $conn) {
+    $inSameCircle = false;
+    
+    $loggedUserCircles = getUserCircleIDs($loggedUser, $conn);
+    
+    for($i=0; $i<count($loggedUserCircles); $i++) {
+        $getMembers = "SELECT UserID FROM group_members WHERE GroupID = {$loggedUserCircles[$i]}";
+        
+        $result = mysqli_query($conn, $getMembers);
+                
+        if(mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_assoc($result)) {
+                if($row["UserID"] == $pageOwner) {
+                    $inSameCircle = true;
+                    break;
+                }
+            }
+        }
+    }
+    //cho "is in same circe?". $inSameCircle . "end <br>";
+    return $inSameCircle;
+}
+
+function isPageOwner($loggedUser, $pageOwner) {
+    $isPageOwner = false;
+    if($loggedUser === $pageOwner) {
+        $isPageOwner = true;
+    }
+    return $isPageOwner;
+}
+
+function isFriendOfFriend($loggedUser, $pageOwner, $conn) {
+    $isFriendOfFriend = false;
+    
+    // returns an array of all friends of the logged user
+    $loggedUserFriends = getFriendsArr($loggedUser, $conn);
+    
+    // runs through each friend of the friends in the logged user's friends
+    for($i=0; $i<count($loggedUserFriends); $i++) {
+        $selectFOfF = "SELECT UserTwo FROM friendships WHERE UserOne = {$loggedUserFriends[$i]}";
+        
+        $fOfResult = mysqli_query($conn, $selectFOfF);
+        
+        if(mysqli_num_rows($fOfResult) > 0) {
+            while($row = mysqli_fetch_assoc($fOfResult)) {
+                if($row["UserTwo"] === $pageOwner) {
+                    $isFriendOfFriend = true;
+                    break;
+                }
+            }
+        }
+    }
+    return $isFriendOfFriend;
+}
+
+function getBlogID($ownerID, $isGroup, $conn) {
+    $blogID = 0;
+    
+    $stmt=$conn->prepare("SELECT BlogID FROM blog_wall WHERE OwnerID = ? AND isGroup =?");
+    $stmt->bind_param("ib", $ownerID, $isGroup);
+    
+    if($stmt->execute()) {
+        $result = $stmt->get_result();
+        
+        if(mysqli_num_rows($result)>0) {
+            $row = mysqli_fetch_assoc($result);
+            $blogID = $row["BlogID"];
+        }
+    }
+    return $blogID;
+}
+    
+    
+function updateBlogPrivacy($blogID, $newPrivacy, $conn) {
+
+    $stmt=$conn->prepare("UPDATE blog_wall SET Privacy = ? WHERE BlogID = ?");
+    $stmt->bind_param("si", $newPrivacy, $blogID);
+    
+    if($stmt->execute() === TRUE){
+        echo "Privacy of blog {$blogID} successfully updated <br>";
+    } else {
+        echo "Error: ". $stmt. "<br>" . $conn->error;
+    }
+}
+
+function updateEmail($userID, $newEmail, $conn) {
+
+    $stmt=$conn->prepare("UPDATE users SET EMAIL = ? WHERE UserID = ?");
+    $stmt->bind_param("si", $newEmail, $userID);
+    
+    if($stmt->execute() === TRUE) {
+        echo "User email successfully updated <br>";
+    } else {
+        echo "Error: ". $stmt. "<br>". $conn->error;
+    }
+}
+    
 ?>
