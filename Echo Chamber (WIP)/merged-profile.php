@@ -64,6 +64,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                     <li class="active"><a href="#">Feed<span class="sr-only">(current)</span></a></li>
                     <li><a href="friends.php">Friends</a></li>
                     <li><a href="photos.php">Photos</a></li>
+                    <li><a href="../Echo Chamber (WIP)/process/logout.php">Logout</a></li>
                   </ul>
                   <ul class="nav navbar-nav navbar-right">
                     <li><a href="../ECGitFolder/profile.php">My Profile</a></li>
