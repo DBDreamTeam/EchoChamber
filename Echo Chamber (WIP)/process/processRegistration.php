@@ -1,7 +1,6 @@
 <?php 
 include '../includes/connect.php';
 include '../includes/functions.php';
-include '../includes/newFunctions.php';
 
 session_start();
 
@@ -10,7 +9,6 @@ ini_set('$file_uploads', 'On');
 ?>
 
 <?php
-// STILL TO DO HEADER FOR REDIRECT TO PROFILE/BLOG PAGE
 header('Location: ../public/choose-your-chamber.php'); 
 ?>
 
@@ -32,7 +30,7 @@ $birthday = $year . "-" . $month . "-" . $day;*/
 // Insert user info into users
 $userID = createUser($username, $hash, $email, $birthday, null, $link);
 // Creates a blog for the new user
-$blogID = createBlog(false, 'Profile Pictures', 'Friends', $userID, $link);
+$blogID = createBlog(false, 'Friends', $userID, $link);
 
 // If an image has been uploaded, does the following:
 
@@ -50,6 +48,7 @@ $_SESSION["LoggedUserID"] = $userID;
 $_SESSION["FriendUserID"] = $userID;
 $_SESSION["isGroup"] = 0;
 $_SESSION["BlogID"] = $blogID;
+$_SESSION['albumID'] = "allPhotos";
 //echo $_SESSION["LoggedUserID"];
 
 $link -> close();

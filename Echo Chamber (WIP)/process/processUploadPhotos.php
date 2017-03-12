@@ -2,20 +2,20 @@
 <?php include '../includes/functions.php';?>
 
 <?php
-header('Location: ../public/photos.php');
+header('Location: ../public/managePhotos.php');
 ?>
 
 <?php
-$userID = $_SESSION["userID"];
-echo $userID;
+$loggedUserID = $_SESSION["LoggedUserID"];
+echo $loggedUserID;
 $albumName = $_POST["albumName"];
 echo $albumName;
 
 // get album ID
-$albumID = getAlbumIDFromName($albumName, $userID, $link);
+$albumID = getAlbumIDFromName($albumName, $loggedUserID, $link);
 echo $albumID;
 
 // insert image into album
-insertImagePlus($albumID, $link);
+insertImageNew($albumID, "uploadedimage", $link);
 
 ?>

@@ -1,12 +1,15 @@
-<?php include '../includes/phptop.php'?>
-<?php include '../includes/functions.php'?>
+<?php 
+include '../includes/phptop.php';
+include '../includes/functions.php';
+?>
+
 
 <?php
-header('Location: ../public/circles.php');
+header('Location: ../public/manageCircles.php');
 ?>
 
 <?php
-$userID = $_SESSION["userID"];
+$userID = $_SESSION["LoggedUserID"];
 
 $blogID = 1;    // TO CHANGE TO CALCULATE
 
@@ -20,22 +23,30 @@ $circleMembers = $_POST["circleMember"];
 ?>
 
 <?php
-// Creates album "Circle Photos" - NEED TO ALTER THIS TO DEAL WITH SITUATION WHERE ALBUM ALREADY EXISTS 
-$albumID = insertAlbum("Circle Photos", $userID, "Circles", $link);
 
-// Inserts the image into the pictures table, with albumID of the circles album specified above
-$tempName = getTempName();
-$targetPath = getTargetPath();
-$imageID = null;
+$albumID = 0;
+$doesAlbumExist = doesAlbumNameExist("Circle Photos", $userID, $link);
 
-if(move_uploaded_file($tempName, $targetPath)) {
-    $imageID = insertImage($targetPath, $albumID, $link);
+if($doesAlbumExist == 1) {
+    // if album "Circle Photos" already exists, insert photo into existing album
+    $albumID = getAlbumIDFromName("Circle Photos", $userID, $link);
+    //echo "album does exist";
 } else{
-   exit("Error While uploading image on the server");
+    // if album "Circle Photos does not already exist, create new album
+    $albumID = insertAlbum("Circle Photos", $userID, "Circles", $link);
+    //echo "album does not exist";
 }
 
+// inserts the image into the imageID table
+$imageID = insertImageNew($albumID, "uploadedimage", $link);
+
 // Inserts all group information into the groups table
-$groupID = insertGroup($blogID, $circleName, $imageID, $circlePrivacy, $link);
+$groupID = insertGroup($circleName, $imageID, $circlePrivacy, $link);
+
+// Creates blog for the circle
+$blogID = createBlog(true, $circlePrivacy, $groupID, $link);
+
+
 
 //echo "<br> Group ID: ". $groupID;
 insertGroupMembers($groupID, $circleMembers, $link);

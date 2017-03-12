@@ -64,8 +64,9 @@ if ($stmt->execute()) {
           // registers the session on the specific user
            $_SESSION['LoggedUserID'] = $row['UserID'];
            $_SESSION['FriendUserID'] = $row['UserID'];
+           $_SESSION['albumID'] = "allPhotos";
             //redirect
-            header("Location: ../public/profile.php");
+            header("Location: ../public/landing.php");
         }else { 
             // don't redirect but display same page with error
            // header("Location: ../public/index.php");

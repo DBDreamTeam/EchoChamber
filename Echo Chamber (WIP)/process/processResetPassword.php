@@ -6,6 +6,8 @@ ini_set('$file_uploads', 'On');
 
 session_start();
 
+header('Location: ../public/manageAccount.php');
+
 // Get variables (the new password) from post
 // which we want to hash as well
 
@@ -18,7 +20,7 @@ if ($_POST["newPassword"] != $_POST["repeatNewPassword"]){
 }else{
     
  $stmt = $link->prepare("UPDATE users SET Password = ? WHERE UserID = ?");
- $stmt->bind_param("si", $hash, $_SESSION['UserID']);
+ $stmt->bind_param("si", $hash, $_SESSION['LoggedUserID']);
 // http://php.net/manual/de/mysqli-stmt.bind-param.php        
         if ($stmt->execute() === TRUE) {
                 echo "Password updated successfully";

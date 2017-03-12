@@ -1,6 +1,6 @@
 <?php
 include '../includes/phptop.php';
-include '../includes/newFunctions.php';
+include '../includes/functions.php';
 ?>
 
 <?php

@@ -6,7 +6,7 @@ header('Location: ../public/chatWindow.php');
 ?>
 
 <?php
-$userID = $_SESSION["userID"];
+$userID = $_SESSION["LoggedUserID"];
 $chatID = $_SESSION["chatID"];
 ?>
 
@@ -38,7 +38,7 @@ if(!empty($_FILES["uploadedimage"]["name"])){
         // if album does already exists, get its ID
         $albumID = getAlbumIDFromName("Chat Photos", $userID, $link);
     }
-    $picID = insertImagePlus($albumID, $link);
+    $picID = insertImageNew($albumID, "uploadedimage", $link);
 } else {
     $picID = null;
 }

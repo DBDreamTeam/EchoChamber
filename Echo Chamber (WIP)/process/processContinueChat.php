@@ -1,6 +1,7 @@
-<?php include '../includes/phptop.php';?>
-<?php include '../includes/functions.php';?>
-<?php include '../includes/chatFunctions.php';?>
+<?php
+include '../includes/phptop.php';
+include '../includes/functions.php';?>
+
 
 <?php
 header('Location: ../public/chatWindow.php');

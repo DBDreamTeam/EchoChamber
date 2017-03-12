@@ -1,14 +1,14 @@
-<?php include '../includes/phptop.php';?>
-<?php include '../includes/functions.php';?>
-<?php include '../includes/chatFunctions.php';?>
+<?php 
+include '../includes/phptop.php';
+include '../includes/functions.php';?>
 
 <?php 
 // In practice, to be set at login
-$_SESSION["userID"] = 105;
+//$_SESSION["userID"] = 105;
 ?>
 
 <?php
-$userID = $_SESSION["userID"];
+$userID = $_SESSION["LoggedUserID"];
 ?>
 
 <?php
