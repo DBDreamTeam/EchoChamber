@@ -5,8 +5,8 @@ session_start();
 include 'connect.php';
 include 'header.php';
 
-
-	$currentUser = $_GET["name"];
+$currentUserID = $_SESSION["LoggedUserID"] ;
+$currentUser = $_SESSION["loggedUser"];
 
 ?>
 
@@ -53,8 +53,6 @@ Friend request for <?php echo "$currentUser" ?> :
     <!-- table cell is td -->
     <!-- th is the header -->
 
-
-
     <tr>
         <th> Request From </th>
         <th> Accept friend </th>
@@ -63,19 +61,28 @@ Friend request for <?php echo "$currentUser" ?> :
 <?php
 
 //Display list of friend request for current user
-$sql = "SELECT * FROM friend_request WHERE user_to = '$currentUser'";
-    $result = $conn->query($sql);
+$sql = "SELECT  * FROM friend_requests WHERE user_to = '$currentUserID'";
+$result = $conn->query($sql);
+
     if (!$result) {
         echo "failed";
     } else {
       while ($row = $result->fetch_assoc()) {
 			$user_from = $row['user_from'];
-			$user_to = $row['user_to']; ?>
-
-
+			$user_to = $row['user_to'];
+			//Get username for requestFrom
+			$sql2 = "SELECT Username FROM users WHERE UserID = '$user_from'";
+			$result2 = $conn->query($sql2);
+				if (!$result2) {
+		        echo "failed";
+		    } else {
+		      while ($row = $result2->fetch_assoc()) {
+					$userFromUsername = $row['Username'];
+				}
+			}
+			?>
            	<tr>
-            <?php echo '  <td>' . $user_from . '</td>'; ?>
-
+            <?php echo '  <td>' . $userFromUsername . '</td>'; ?>
             <td><form action="handleFriendRequest.php" method="get">
             <button type="submit" class="acceptFriend" name = "accept">Accept
            	</button>

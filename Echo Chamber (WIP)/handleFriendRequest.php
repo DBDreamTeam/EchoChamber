@@ -1,44 +1,21 @@
 <?php
-
+session_start();
 include 'connect.php';
 
-$requestFrom = $_GET["user_from"];
-$currentUser = $_GET["user_to"];
-
-//Get the userID
-  $getUserIDSql = "SELECT UserID FROM users WHERE Username ='$requestFrom'";
-  $result = $conn->query($getUserIDSql);
-	if($conn->connect_error){
-		$message = $conn->connect_error;
-	}
-  while($row = $result->fetch_assoc()) {
-    $requestFromUserID = $row['UserID'];
-
-
-  }
-
-//Get the current userID
-	$getUserIDSql2 = "SELECT UserID FROM users WHERE Username ='$currentUser'";
-	$result2 = $conn->query($getUserIDSql2);
-	if($conn->connect_error){
-		$message = $conn->connect_error;
-	}
-	while($row = $result2->fetch_assoc()) {
-	  $currentUserUserID = $row['UserID'];
-	}
-
+$requestFromID = $_GET["user_from"];
+$currentUserID = $_GET['user_to'];
 $reject = $_GET["reject"];
 $accept = $_GET["accept"];
 
 //perform if accept button is pressed
 if($accept == 'yes') {
-	$acceptFriendQuery = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$requestFromUserID', '$currentUserUserID')";
+	$acceptFriendQuery = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$requestFromID', '$currentUserID')";
 	if ($conn -> query($acceptFriendQuery) === TRUE) {
 	} else {
 		echo "Error: ". $acceptFriendQuery . "<br>" . $conn->error;
 	}
 
-	$acceptFriendQuery2 = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$currentUserUserID', '$requestFromUserID')";
+	$acceptFriendQuery2 = "INSERT INTO friendships (UserOne, UserTwo) VALUES ('$currentUserID', '$requestFromID')";
 
 	if ($conn -> query($acceptFriendQuery2) === TRUE) {
 		echo "You are friends now!";
@@ -46,7 +23,7 @@ if($accept == 'yes') {
 		echo "Error: ". $acceptFriendQuery2 . "<br>" . $conn->error;
 	}
 
-	$removeFriendRequest = "DELETE FROM friend_request WHERE user_from = '$requestFrom' AND user_to = '$currentUser'";
+	$removeFriendRequest = "DELETE FROM friend_requests WHERE user_from = '$requestFromID' AND user_to = '$currentUserID'";
 
 	if ($conn -> query($removeFriendRequest) === TRUE) {
  	} else {
@@ -54,7 +31,7 @@ if($accept == 'yes') {
     }
 
 
-	$removeFriendRequest2 = "DELETE FROM friend_request WHERE user_from = '$currentUser' AND user_to = '$requestFrom'";
+	$removeFriendRequest2 = "DELETE FROM friend_requests WHERE user_from = '$currentUserID' AND user_to = '$requestFromID'";
 
 		if ($conn -> query($removeFriendRequest2) === TRUE) {
 	 	} else {
@@ -65,7 +42,7 @@ if($accept == 'yes') {
 
 //perform if reject button is pressed
 if($reject == 'yes') {
-	$removeFriendQuery = "DELETE FROM friend_request WHERE user_from = '$requestFrom' AND user_to = '$currentUser'";
+	$removeFriendQuery = "DELETE FROM friend_requests WHERE user_from = '$requestFromID' AND user_to = '$currentUserID'";
 
 	if ($conn -> query($removeFriendQuery) === TRUE) {
 		echo "Rejected";
