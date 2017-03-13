@@ -6,13 +6,9 @@ session_start();
 
 mysqli_query($link, "SET SESSION sql_mode = 'STRICT'");
 ini_set('$file_uploads', 'On');
-?>
 
-<?php
 header('Location: ../public/choose-your-chamber.php'); 
-?>
 
-<?php
 // Get variables from post
 $username = $_POST["firstname"] . " " . $_POST["lastname"];
 $hash = password_hash($_POST["password"], PASSWORD_DEFAULT);
