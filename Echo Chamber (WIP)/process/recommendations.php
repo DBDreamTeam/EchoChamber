@@ -39,7 +39,7 @@ function get_friend_recommendations($user_id) {
               ($no_of_common_friends) DESC,
               ($no_of_common_circles) DESC";
   
-  $result = mysqli_query($conn, $non_friends_sql);
+  $result = mysqli_query($link, $non_friends_sql);
   
   return $result;
   
