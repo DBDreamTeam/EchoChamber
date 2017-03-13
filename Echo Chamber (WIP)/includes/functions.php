@@ -1137,10 +1137,7 @@ Gets a list of UserIDs for recommended friends, ordered from best recommnedation
 worst, based on the number of common sentiments, mutual friends, and common groups
 between the user passed in, $user_id, and each user in the list.
 */
-function getFriendRecommendations($user_id) {
-  
-  require_once("local-connect.php");
-  
+function getFriendRecommendations($user_id, $conn) {
   
   /*
   Gets a list of the users friends, and those with whom they have a pending
@@ -1148,7 +1145,7 @@ function getFriendRecommendations($user_id) {
   and thus better for performance at scale.
   */
   $friends_sql = "
-      SELECT * FROM users 
+      SELECT UserID FROM users 
           WHERE UserID = $user_id
           OR UserID IN
               (
@@ -1192,7 +1189,7 @@ function getFriendRecommendations($user_id) {
           GROUP BY f2.UserTwo
           ORDER BY count";
   
-  $mutual_friends_sql = $conn->query($mutual_friends_sql);
+  $mutual_friends_result = $conn->query($mutual_friends_sql);
   
   /*
   Gets an ordered list of users who are not the user's friend, and who
@@ -1202,9 +1199,9 @@ function getFriendRecommendations($user_id) {
       SELECT g2.UserID, COUNT(g2.UserID) AS count FROM group_members AS g1
           JOIN group_members AS g2
           ON g1.GroupID = g2.GroupID
-          WHERE g1.UserID = 1
+          WHERE g1.UserID = $user_id
           AND g1.UserID <> g2.UserID
-          AND f2.UserID NOT IN ($friends_sql)
+          AND g2.UserID NOT IN ($friends_sql)
           GROUP BY g2.UserID
           ORDER BY count";
   
@@ -1217,23 +1214,29 @@ function getFriendRecommendations($user_id) {
   */
   $recommended_friends = array();
   // Add values for common entities
-  while ($row = $common_entities_result->fetch_assoc()) {
-    $recommended_friends[$row['UserID']] = $row['count'] * 10;
+  if ($common_sentiments_result) {
+    while ($row = $common_sentiments_result->fetch_assoc()) {
+      $recommended_friends[$row['UserID']] = $row['count'] * 10;
+    }
   }
   // Add values for mutual friends
-  while ($row = $mutual_friends_result->fetch_assoc()) {
-    if (isset($recommended_friends[$row['UserID']])) {
-      $recommended_friends[$row['UserID']] += $row['count'];
-    } else {
-      $recommended_friends[$row['UserID']] = $row['count'];
+  if ($mutual_friends_result) {
+    while ($row = $mutual_friends_result->fetch_assoc()) {
+      if (isset($recommended_friends[$row['UserID']])) {
+        $recommended_friends[$row['UserID']] += $row['count'];
+      } else {
+        $recommended_friends[$row['UserID']] = $row['count'];
+      }
     }
   }
   // Add values for common circles
-  while ($row = $common_circles_result->fetch_assoc()) {
-    if (isset($recommended_friends[$row['UserID']])) {
-      $recommended_friends[$row['UserID']] += $row['count'];
-    } else {
-      $recommended_friends[$row['UserID']] = $row['count'];
+  if ($common_circles_result) {
+    while ($row = $common_circles_result->fetch_assoc()) {
+      if (isset($recommended_friends[$row['UserID']])) {
+        $recommended_friends[$row['UserID']] += $row['count'];
+      } else {
+        $recommended_friends[$row['UserID']] = $row['count'];
+      }
     }
   }
   
