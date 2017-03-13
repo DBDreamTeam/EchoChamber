@@ -2,37 +2,29 @@
 
 session_start();
 
-include '../includes/connect.php';
-include '../includes/navigation.php';
-include '../includes/functions.php';
+include('../includes/connect.php');
+include('../includes/functions.php');
 
-?>
-
-<?
 $LoggedUserID = $_SESSION["LoggedUserID"];
 $user = getUsernameFromID($LoggedUserID, $link);
 $FriendUserID = $_SESSION["FriendUserID"];
 $CheckFriend = getUsernameFromID($FriendUserID, $link);
 
-echo $LoggedUserID; 
-echo $user;
-echo $FriendUserID;
-echo $CheckFriend;
 ?>
 
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>EchoChamber</title>
+    <title><?php echo $CheckFriend; ?></title>
 
     <!-- Bootstrap -->
-    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="css/custom.css" rel="stylesheet" type="text/css">
+    <link href="../css/custom.css?v=<? echo time(); ?>" rel="stylesheet" type="text/css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -41,306 +33,374 @@ echo $CheckFriend;
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-
-
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Profile </title>
-<link rel='stylesheet' href= 'css/style.css'/>
-<!-- Bootstrap CSS -->
-<!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
-<link rel="stylesheet" href="css/custom.css">
-<!-- Fonts -->
-<link rel='stylesheet' type='text/css'
-    href='https://fonts.googleapis.com/css?family=Lato:400,700,900,300'>
-<link rel='stylesheet' type='text/css'
-    href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'>
-<link rel='stylesheet' type='text/css'
-    href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
-<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <body>
     
-<body>
-
-
-<!-- Friend buttons -->
-<form action="../process/processSeeFriend.php" method="post">
-<?php echo "Friends will go here"?>
-<?php
-$friendsIDArray = getFriendIDs($LoggedUserID, $link);
-
-for($i=0; $i<count($friendsIDArray); $i++) {
-    $friendName = getUsernameFromID($friendsIDArray[$i], $link);  
-?>
-
-<button type="submit" name="friendID" value="<?php echo $friendsIDArray[$i]; ?>"><?php echo $friendName; ?> </button>
-
-<? } ?>
-
-</form>
-
-<?php include '../includes/navigation.php';?>
-
-
-<div>
-
-
-
-
-  <?php
-  //get the userID of current logged user
-    /*$user = $_SESSION["loggedUser"];
-    $getLoggedUserIDSql = "SELECT UserID FROM users WHERE Username ='$user'";
-    $getLoggedUserIDResult = $link->query($getLoggedUserIDSql);
-    while($row = $getLoggedUserIDResult->fetch_assoc()) {
-      $LoggedUserID = $row['UserID'];
-    }*/
-
-  //get the details of friend
- /* 	$CheckFriend = $_SESSION["friend2"];
-  	$getFriendUserIDSql = "SELECT UserID FROM users WHERE Username ='$CheckFriend'";
-    $getFriendUserIDResult = $link->query($getFriendUserIDSql);
-    while($row = $getFriendUserIDResult->fetch_assoc()) {
-      $FriendUserID = $row['UserID'];
-    }*/
-
-  //Check from friendship table to see if they are friends
-  $FreindshipTableSql = "SELECT * FROM friendships WHERE UserTwo ='$FriendUserID'";
-  $UserTableSql = "SELECT * FROM users WHERE Username ='$CheckFriend'";
-  $FreindshipResult = $link->query($FreindshipTableSql);
-  $UserTableResult = $link->query($UserTableSql);
-  ?>
-
-  <?php
-  //set session ID for loggedUser and Friend
-  //$_SESSION["FriendUserID"] = $FriendUserID;
-  //$_SESSION["LoggedUserID"] = $LoggedUserID;
-  
-$BlogID = 0;
-
-  //Query from friendship table to see if two users are friend or not
-	$FreindshipQuery = "SELECT * FROM friendships WHERE UserOne ='$LoggedUserID' AND UserTwo = '$FriendUserID'";
-	$isFriend = $link->query($FreindshipQuery);
+    <header>
+      <h1><span>Echo</span>Chamber</h1>
+    </header>
     
-  //find the blogID
-    $getBlogIDQuery = "SELECT BlogID FROM blog_wall WHERE IsGroup = '0' AND OwnerID ='$FriendUserID'";
-    $getBlogIDResult = $link->query($getBlogIDQuery);
-    while($row = $getBlogIDResult->fetch_assoc()) {
-      //Store blogID into a variable
-      $BlogID = $row['BlogID'];
-      $_SESSION["BlogID"] = $BlogID;
-  }
+    <div class="row">
+      
+      <!-- Main display area -->
+      <div class="col-sm-9">
+        
+        <!-- Navbar -->
+        <!-- ref: https://getbootstrap.com/components/ -->
+        <form action="../process/processNav.php" method="post" id="nav-form"></form>
+        <div class="row">
+          <nav class="navbar navbar-default">
+            <div class="container-fluid">
+              <!-- Brand and toggle get grouped for better mobile display -->
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+              </div>
 
-  //Store blogID into session variable
+              <!-- Collect the nav links, forms, and other content for toggling -->
+              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <ul class="nav navbar-nav">
+                    <li><a><button type="submit" name="nav" value="profile" class="nav-link" form="nav-form">Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">Photos</button></a></li>
+                  </ul>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li><a><button type="submit" name="nav" value="myFeed" class="nav-link" form="nav-form">My Feed</button></a></li>
+                    <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="chat" class="nav-link" form="nav-form">Chat</button></a></li>
+                    <li><a><button type="submit" name="nav" value="myAccount" class="nav-link" form="nav-form">My Account</button></a></li>
+                    <li><a><button type="submit" name="nav" value="logout" class="nav-link" form="nav-form">Log Out</button></a></li>
+                  </ul>
+              </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+          </nav>
+        </div>
+        <!-- End navbar -->
+        
+        <!-- TODO: Add the new post box here -->
+        <div class="row">
+          <div class="col-sm-2">
+            <img src="img/ECLogo1.png" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture">
+          </div>
+          <div class="col-sm-10" id="new-post">
+            
+            <h3><?php echo $CheckFriend; ?></h3>
+            
+            
+            
+            <!-- START OF MABEL'S STUFF -->
+            
+            <?php
+            
+            //Check from friendship table to see if they are friends
+            $FriendshipTableSql = "
+                SELECT * FROM friendships 
+                    WHERE UserTwo ='$FriendUserID'";
+            $UserTableSql = "
+                SELECT * FROM users 
+                    WHERE Username ='$CheckFriend'";
+            $FriendshipResult = $link->query($FriendshipTableSql);
+            $UserTableResult = $link->query($UserTableSql);
+            
+            //Query from friendship table to see if two users are friend or not
+            $FriendshipQuery = "
+                SELECT * FROM friendships 
+                    WHERE UserOne ='$LoggedUserID' 
+                    AND UserTwo = '$FriendUserID'";
+            $isFriend = $link->query($FriendshipQuery);
+
+            //find the blogID
+            $getBlogIDQuery = "
+                SELECT ID FROM blog_wall 
+                    WHERE IsGroup = 0 
+                    AND OwnerID ='$FriendUserID'";
+            $getBlogIDResult = $link->query($getBlogIDQuery);
+            while($row = $getBlogIDResult->fetch_assoc()) {
+              //Store blogID into a variable
+              $BlogID = $row['ID'];
+              $_SESSION["ID"] = $BlogID;
+            }
+
+            //Store blogID into session variable
+
+            //Check privacy of blog
+            $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE ID = '$BlogID'";
+            $privacyResult = $link->query($checkPrivacy);
+            while($row = $privacyResult->fetch_assoc()) {
+              $privacy = $row['Privacy'];
+            }
+            
+            
+            // If a user is viewing their own profile, show a textarea
+            // for them to make a new post
+            if ($user == $CheckFriend) { 
+            ?>
+              <!-- https://www.w3schools.com/css/css_form.asp -->
+              <form method = "POST" action = "../process/blog.php">
+                <textarea id = "blogText" name="blogInput" placeholder="Write a new post"></textarea>
+                <input type="submit" class="btn btn-default pull-right" value="Post" name="submitBlog">
+              </form>
+            <?php  
+            }
+            ?>
+            
+            
+            <!-- END OF MABEL'S STUFF -->
+            
+          </div>
+        </div>
+        
+        <!-- Content area -->
+        <div class="row">
+          
+          <!-- Main area (posts, photos etc) -->
+          <div class="col-sm-8" id="main-feed">
+            
+            <div class="feed-item" id="1">
+              <h5>Zak Walters</h5>
+              <p>I'm so excited about doing this databases project</p>
+            </div>
+            <div class="feed-item" id="2">
+              <h5>Mabel Chan</h5>
+              <p>OMG I hate emojis, they're so lame and tacky</p>
+            </div>
+            <div class="feed-item feed-photo" id="3">
+              <h5>Mairi Ng</h5>
+              <img src="img/ECLogo1.png" alt="EC Logo">
+              <p>Our logo is so cool!!!!!!!!</p>
+            </div>
+            <div class="feed-item feed-album" id="4">
+              <h5>Marisa Enhuber</h5>
+              <!-- These need to be scaled down... -->
+              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
+              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
+              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
+              <h6>Just loads of our logo!</h6>
+              <p>This is the only image I have in the local folder so I
+              had to use it as every image in the album.</p>
+            </div>
+          </div>
+          
+          <!-- Side area (further info, comments, etc) -->
+          <div class="col-sm-4" id="comments" hidden="hidden">
+            
+            <form method="post">
+              <label id="comment-box">
+                <textarea placeholder="New Comment..."></textarea>
+              </label>
+              <label>
+                <button type="submit" class="btn btn-default pull-right">Post</button>
+              </label>
+            </form>
+            
+            <h5>Comments</h5>
+            
+            <div class="comment">
+              <p><b>Mairi Ng</b></p>
+              <p>Whatever this is, I love it!!!</p>
+            </div>
+          </div>
+          
+        </div>
+      
+      </div>
+      
+      <!-- Right sidebar/recommendations area -->
+      <div class="col-sm-3">
+        
+        <!-- Search -->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="container">
+              <form class="navbar-form navbar-center" role="search" action="../process/fetch.php" method="post">
+                <div class="form-group">
+                  <input type="text" id="search" name="searchTxt" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" name="submitSearch" class="btn btn-default">Go</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="row">
+          <!-- If they have Friend Requests, show them -->
+        <?php
+        $currentUserID = $_SESSION["LoggedUserID"];
+        $currentUser = getUsernameFromID($currentUserID, $link);
+
+        //Display list of friend request for current user
+        $sql = "SELECT  * FROM friend_requests WHERE user_to = '$currentUserID'";
+        $result = $link->query($sql);
+        $no_of_friend_requests = mysqli_num_rows($result);
+        if ($no_of_friend_requests > 0) {
+          ?>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Friend Requests</h4>
+            <table style = "width: 100%">
+              <?php
+        }
+
+        
+
+            if (!$result) {
+                echo "failed";
+            } else {
+              while ($row = $result->fetch_assoc()) {
+                    $user_from = $row['user_from'];
+                    $user_to = $row['user_to'];
+                    //Get username for requestFrom
+                    $sql2 = "SELECT Username FROM users WHERE UserID = '$user_from'";
+                    $result2 = $link->query($sql2);
+                        if (!$result2) {
+                        echo "failed";
+                    } else {
+                      while ($row = $result2->fetch_assoc()) {
+                            $userFromUsername = $row['Username'];
+                        }
+                    }
+                    ?>
+                    <tr>
+                    <?php echo '  <td>' . $userFromUsername . '</td>'; ?>
+                    <td><form action="../process/handleFriendRequest.php" method="get">
+                    <button type="submit" class="acceptFriend btn btn-default" name = "accept">Accept
+                    </button>
+                    <?php
+                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
+                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
+                    echo '  <input type="hidden" name="reject" value="no">';
+                    echo '  <input type="hidden" name="accept" value= "yes">';
+                        ?>
+
+                    </form></td>
 
 
-  //Check privacy of blog
-  $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE BlogID = '$BlogID'";
-  $privacyResult = $link->query($checkPrivacy);
-    while($row = $privacyResult->fetch_assoc()) {
-      $privacy = $row['Privacy'];
-    }
-   ?>
+                    <td><form action="../process/handleFriendRequest.php" method="get">
+                    <button type="submit" class="rejectFriend btn btn-default" name = "reject">Reject</button>
+                    <?php
+                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
+                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
+                    echo '  <input type="hidden" name="reject" value="yes">';
+                    echo '  <input type="hidden" name="accept" value= "no">';
+                        ?>
+                   </form></td>
 
+                    </tr>
+               <?php } ?>
+        <?php }
+          
+          if ($no_of_friend_requests > 0) {
+            ?>
+        </table>
+          </div>
+          <?php } ?>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Suggested Friends</h4>
+            <?php 
+            // Get the ranked list of suggestions
+            $suggestedFriends = getFriendRecommendations($LoggedUserID, $link);
+            // Show the top 5
+            $noToShow = min(5, sizeof($suggestedFriends));
+            for ($i = 0 ; $i < $noToShow ; $i++) {
+              $userID = $suggestedFriends[$i];
+              $sql = "
+                  SELECT * FROM users
+                      WHERE UserID = $userID";
+              $result = $link->query($sql);
+              if ($result) {
+                $row = $result->fetch_assoc();
+                ?>
+                <!-- show the friend's name and an add friend button -->
+                <div class="suggestion">
+                  <button class="profile-link"><b><?php echo $row['Username']; ?></b></button>
+                  	<form method="POST">
+                      <input <?php 
+                        if (isset($_POST['add' . $row['UserID']])) { 
+                             ?> type="hidden" <?php 
+                        } else { 
+                             ?> type="submit" <?php 
+                        } ?> name="add<?php echo $row['UserID']; ?>" class="add btn btn-default" value="Add">
+                      <!--Send friend request-->
+                      <?php
+                      if(isset($_POST['add' . $row['UserID']])) {
+                          $friendID = $row['UserID'];
+                          $addFriendQuery = "
+                              INSERT INTO friend_requests 
+                                  (user_from, user_to) 
+                                  VALUES 
+                                  ('$LoggedUserID', '$friendID')";
+                          if ($link->query($addFriendQuery)) {
+                          echo "Request sent successfully";
 
-<!-- Blog session -->
-<div class = "column blog">
+                          } else {
+                              echo "Error: ". $addFriendQuery . "<br>" . $link->error;
+                          }
+                      }
+                     ?>
+                  </form>
+                </div>
+                <?php
+              }
+            }
+            ?>
+          </div>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Suggested Groups</h4>
+          </div>
+        </div>
+      
+      </div>
+      
+    </div>
 
-<br>
-<br>
-
-<?php
-
-  if ($user == $CheckFriend) { ?>
-    <!-- https://www.w3schools.com/css/css_form.asp -->
-    <form method = "POST" action = "../process/blog.php">
-      Blog:
-      <br>
-      <input id = "blogText" type="text" name="blogInput">
-      <br><br>
-      <input type="submit" value="Submit" name = "submitBlog">
-    </form>
-<?php  } ?>
-
-
-<?php
-
-
-//load the blog wall
-if ($user == $CheckFriend) {
-    $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $link->query($loadBlog);
-    while($row = $loadBlogResult->fetch_assoc()) {
-      echo "Previous Blog: ";
-      echo '<br>';
-      echo "Time : ";
-      echo $row['Time'];
-      echo '<br>';
-      echo $row['text'];
-      echo '<br>';
-    }
-  }
-
-if ($privacy == 'Friends') {
-  if(mysqli_num_rows($isFriend)>=1){
-    $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $link->query($loadBlog);
-    while($row = $loadBlogResult->fetch_assoc()) {
-      echo "Previous Blog: ";
-      echo '<br>';
-      echo "Time : ";
-      echo $row['Time'];
-      echo '<br>';
-      echo $row['text'];
-      echo '<br>';
-    }
-  }
-} elseif ($privacy == 'Public') {
-    $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $link->query($loadBlog);
-    while($row = $loadBlogResult->fetch_assoc()) {
-      echo "Previous Blog: ";
-      echo '<br>';
-      echo "Time : ";
-      echo $row['Time'];
-      echo '<br>';
-      echo $row['text'];
-      echo '<br>';
-    }
-  } elseif ($privacy == 'Circles') {
-    echo "circle";
-  } elseif ($privacy == 'FriendsOfFriends') {
-    echo "Friends of friends";
-  }
-
-?>
-
-
-</div>
-
-
-<!-- Side column to load profile -->
-<div class = "column profile">
-
-  <br>
-
-  <!-- Welcome message for logged user -->
-
-  Welcome ! <?php echo $user; ?>
-  <br>
-  <br>
-  <br>
-
-<?php
-$loadMem = "SELECT u.Username FROM users u INNER JOIN friendships f
-ON u.UserID = f.UserOne
-WHERE UserTwo ='$FriendUserID'";
-$loadMemResult = $link->query($loadMem);
-
- ?>
-<!-- This shows the user's profile that logged user is looking at -->
-<h3><?php echo $CheckFriend; ?>'s profile </h3>
-	<br>
-    <!-- Display logged user's friends-->
-    <p>Friends: </p>
-    <?php while($row = $loadMemResult->fetch_assoc()) { ?>
-	<p> </p>
-	<?php echo $row['Username']; ?>
-    <?php
-	} ?>
-  <br>
-  <br>
-  <br>
-  <br>
-  <?php
-  echo "Visible to :  ";
-  echo $privacy;
-  echo '<br>';
-?>
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <!-- Display logged user's birthday-->
-    <p> Birthday: </p>
-    <?php while($row = $UserTableResult->fetch_assoc()) { ?>
-	<p> </p>
-	<?php echo $row['Birthday']; ?>
-    <?php } ?>
-
-    <br>
-    <br>
-    <br>
-    <br>
-
-	<!-- He/she is friends, a remove button will be shown-->
-	<?php if((mysqli_num_rows($isFriend)>=1)&& $user !== $CheckFriend){ ?>
-    <p> Is friend? </p>
-		<?php echo "You are already friends ^_^"; ?>
-		<br>
-		<br>
-		<form method="POST">
-			<input type="submit" name = "removeFriend" class ="remove" value ="Remove">
-			<!-- Remove button will -->
-			<?php
-			if(isset($_POST['removeFriend'])) {
-				$removeFriendQuery = "DELETE FROM friendships WHERE UserOne = '$LoggedUserID' AND UserTwo = '$FriendUserID'";
-
-				$removeFriend2 = "DELETE FROM friendships WHERE UserTwo = '$LoggedUserID' AND UserOne = '$FriendUserID'";
-
-				if ($link -> query($removeFriendQuery) === TRUE) {
-				echo " ";
- 				} else {
-					echo "Error: ". $removeFriendQuery . "<br>" . $link->error;
-        		}
-				if ($link -> query($removeFriend2) === TRUE) {
-						echo "Remove successfully";
-						} else {
-							echo "Error: ". $removeFriend2 . "<br>" . $link->error;
-				}
-			}
-
-	?>
-		</form>
-	<!-- He/she is not friends yet, an add button is displayed-->
-	<?php } elseif ((mysqli_num_rows($isFriend)<=0)&& $user !== $CheckFriend) { ?>
-    <p> Is friend? </p>
-	<?php echo "Wow, you are not friends yet!"; ?>
-
-	<form method="POST">
-		<input type="submit" name ="addFriend" class = "add" value = "Add">
-		<!--Send friend request-->
-		<?php
-		if(isset($_POST['addFriend'])) {
-			$addFriendQuery = "INSERT INTO friend_request (id,user_from, user_to) VALUES (NULL,'$user', '$CheckFriend')";
-			if ($link -> query($addFriendQuery) === TRUE) {
-            echo "Request sent successfully";
-
-			} else {
-            	echo "Error: ". $addFriendQuery . "<br>" . $link->error;
-        	}
-		}
-	   ?>
-	</form>
-</div>
-
-</div>
-	<?php } //end of if loop ?>
-</body>
-</head>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    
+    <!-- control active post -->
+    <script>
+      function showComments(clickedPost) {
+        // TODO: Add stuff to actually update the comments area w/ ajax
+        var allPosts = document
+                          .getElementById("main-feed")
+                          .getElementsByClassName("feed-item");
+        for (var i = 0 ; i < allPosts.length ; i++) {
+          if (allPosts[i] === clickedPost) {
+            allPosts[i].style.background = "linear-gradient(to right, white, #f0f0f0)";
+            allPosts[i].style.marginRight = "-3px";
+            // show the comments
+            $.ajax({
+              url: "../process/showComments.php",
+              type: "POST",
+              data: {postID: clickedPost.id},
+              dataType: "text",
+              success: function(data) {
+                document.getElementById("comments").innerHTML = data;
+              }
+            });
+            
+          } else {
+            allPosts[i].style = null;
+          }
+        }
+      }
+      
+      var feed = document.getElementById("main-feed");
+      var posts = feed.getElementsByClassName("feed-item");
+      for (var i = 0 ; i < posts.length ; i++) {
+        posts[i].onclick = function() {
+          document.getElementById("comments").hidden = "";
+          showComments(this);
+          return false;
+        }
+        posts[i].onfocus = function() {
+          showComments(this);
+          return false;
+        }
+      }
+    </script>
+  </body>
 </html>
