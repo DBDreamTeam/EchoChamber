@@ -5,25 +5,14 @@ session_start();
 include 'connect.php';
 include 'header.php';
 include 'function.php';
+
+//this get the groupName variable from fetch.php
+if (!empty($_POST["groupName"])) {
+  //echo $_POST["testFriend"];
+  $_SESSION["groupName"] = $_POST["groupName"];
+}
+
 ?>
-<script src="jquery.js"></script>
-<script>
-    $(document).ready(function (e) {
-        $("#search").keyup(function) {
-            $("#here").show();
-            var x = $(this).val();
-            $.ajax({
-                url:'fetch.php',
-                type:'GET',
-                data:'keyword='+key,
-                success:function (data) {
-                    $("#here").html(data);
-                    $("#here").slideDown('fast');
-                }
-            });
-        });
-    });
-</script>
 
 <html>
 <head>
@@ -104,7 +93,7 @@ include 'function.php';
     }
 
   ?>
-  
+
 <!-- Search session -->
 <h1>search </h1>
 <form method = "POST" action = "fetch.php">
