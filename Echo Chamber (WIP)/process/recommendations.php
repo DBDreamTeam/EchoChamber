@@ -1,11 +1,9 @@
 <?php
+// changed to match Mairi's setup of the db
 include '../includes/connect.php';
 function get_friend_recommendations($user_id) {
-  
-
   //require_once("local-connect.php");
-  
-  
+ 
   // Get list of users that are not their friends already
   // This must also exclude people they have pending friend requests with
   $non_friends_sql = "
@@ -40,7 +38,7 @@ function get_friend_recommendations($user_id) {
               ($no_of_common_circles) DESC";
   
   $result = mysqli_query($link, $non_friends_sql);
-  
+  // changed $conn to link because Mairi, the goddess of php, said so
   return $result;
   
 }
