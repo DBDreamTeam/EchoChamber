@@ -117,3 +117,19 @@ label {
   width: 100%;
   display: inline-block;
 }
+
+.profile-link, .nav-link {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.recommendation-section {
+  text-align: right;
+  margin-top: 40px;
+  padding-right: 40px;
+}
+
+.suggestion {
+  padding: 10px;
+}
