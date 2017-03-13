@@ -1,8 +1,9 @@
 <?php
-
+include '../includes/connect.php';
 function get_friend_recommendations($user_id) {
   
-  require_once("local-connect.php");
+
+  //require_once("local-connect.php");
   
   
   // Get list of users that are not their friends already
