@@ -1,13 +1,119 @@
-input {
-    width: 200px;
-    display: inline-block;
+/*
+Colour Ref:
+EC Blue:    #1c2477   rgba(28, 36, 119, 1)
+EC Orange:  #f08139   rgba(240, 129, 57, 1)
+*/
+
+header {
+  vertical-align: middle;
+  padding-left: 20px;
+  margin-bottom: 20px;
 }
 
-input[type=submit] {
-    width: 80px;
+#welcome-banner {
+  padding: 40px;
+}
+
+header > h1 {
+  color: #1c2477;
+} 
+
+header > h1 > span {
+  color: #f08139;
+}
+
+footer {
+  height: 10px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.wrapper {
+  min-height: 100%;
+  margin-bottom: -10px;
+}
+
+.wrapper:after {
+  content: "";
+  display: block;
+}
+
+html, body {
+  height: 100%;
+}
+
+#intro {
+  padding: 20px;
+  font-size: 20px;
+}
+
+#signin {
+  padding: 50px;
+  padding-right: 80px;
+  vertical-align: middle;
+}
+
+.btn-default[value=negative]:hover {
+  background-color: rgba(240, 129, 57, 0.5);
+} 
+
+.btn-default[value=positive]:hover {
+  background-color: rgba(28, 36, 119, 0.5);
+} 
+
+.glyphicon {
+  font-size: 40px; 
+}
+
+#main-feed, h5 {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 3px;
+  padding-left: 15px;
+  border-radius: 10px;
+}
+
+.feed-item {
+  padding: 5px;
+  margin: 10px;
+  background-color: grey;
+  background: linear-gradient(to right, #f0f0f0, white);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.album-thumbnail {
+  border-style: inset;
+  border-top-color: #f08139;
+  border-left-color: #f08139;
+  border-right-color: #1c2477;
+  border-bottom-color: #1c2477;
+  border-width: 3px;
+}
+
+#comments {
+  margin-top: 13px;
+  padding: 10px;
+  background-color: #f0f0f0; 
+}
+
+#comment-box {
+  display: block;
+}
+
+.comment {
+  background-color: white;
+  border-left: solid;
+  padding-left: 8px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+textarea {
+  width: 100%;
 }
 
 label {
-    display: block;
-    margin-bottom: 10px;
+  width: 100%;
+  display: inline-block;
 }
