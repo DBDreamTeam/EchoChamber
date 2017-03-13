@@ -10,8 +10,8 @@
     <title>EchoChamber</title>
 
     <!-- Bootstrap -->
-    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/custom.css?v=<? time(); ?>" rel="stylesheet">
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/custom.css?v=<? echo time(); ?>" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,7 +22,7 @@
   </head>
   
   <header id="welcome-banner">
-      <h1><span>Echo</span>Chamber</h1>
+      <h1><span class="echo">Echo</span>Chamber</h1>
       <h4>a social network for people just like you.</h4>
   </header>
   
@@ -85,7 +85,7 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     
   </body>
   
