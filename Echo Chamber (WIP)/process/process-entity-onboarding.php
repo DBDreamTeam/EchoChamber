@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-//print_r($_SESSION);
 
 // Add the last response into the array in SESSION
 $entity = $_POST['entity'];
@@ -18,7 +17,7 @@ if (count($_SESSION['onboarding_entities']) >= 3) {
     $userid = $_SESSION['LoggedUserID'];
     $sql = "REPLACE INTO sentiments (UserID, Entity, Sentiment)
                 VALUES ($userid, '$entity', '$sentiment')";
-    $result = mysqli_query($conn, $sql);
+    $result = mysqli_query($link, $sql);
   }
   // Remove the array from SESSION data
   unset($_SESSION['onboarding_entities']);
