@@ -17,7 +17,7 @@ CREATE TABLE `friendships` (
 
 CREATE TABLE `pictures`(
     `PictureID` int(10) AUTO_INCREMENT NOT NULL,
-    `Time`      timestamp(6),
+    `Time`      timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, /* default to current timestamp added */
     `Picture`   varchar(200) NOT NULL, 
     `AlbumID`   int(10) NOT NULL, /* AlbumID added */
     PRIMARY KEY (`PictureID`)
@@ -28,8 +28,7 @@ CREATE TABLE `groups`(
     `BlogID`    int(10) NOT NULL,
     `Name`      varchar(100) NOT NULL,
     `PictureID` int(10),
-    `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends') NOT NULL,
-    PRIMARY KEY (`GroupID`)
+    PRIMARY KEY (`GroupID`) /*Privacy removed */
 );
 
 CREATE TABLE `group_members`(
@@ -39,10 +38,9 @@ CREATE TABLE `group_members`(
 );
 
 CREATE TABLE `blog_wall`(
-    `ID`        int(100) AUTO_INCREMENT NOT NULL,
+    `BlogID`    int(100) AUTO_INCREMENT NOT NULL,
     `IsGroup`   boolean NOT NULL,
     `OwnerID`   int(100) NOT NULL,
-    `Name`      varchar(100) NOT NULL,
     `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL,
     PRIMARY KEY (`ID`, `IsGroup`)
 );
@@ -50,7 +48,7 @@ CREATE TABLE `blog_wall`(
 CREATE TABLE `posts`(
     `PostID`    int(10) AUTO_INCREMENT NOT NULL,
     `BlogID`    int(10) NOT NULL,
-    `Time`      datetime(6) NOT NULL,
+    `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `text`      varchar(100),
     `AlbumID`   int(10),
     PRIMARY KEY (`PostID`)
@@ -70,7 +68,7 @@ CREATE TABLE `comments`(
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added default to current timestamp */
     `Text`      text NOT NULL, /* varchar(6) changed to text */
     `PostID`    int(4) NOT NULL,
-    `isPictures`boolean NOT NULL,
+    `isPictures` boolean NOT NULL,
     `UserID`    int(4) NOT NULL,
     PRIMARY KEY (`CommentID`)
 );
