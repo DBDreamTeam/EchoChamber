@@ -1,23 +1,14 @@
 <?php 
+
+// THIS IS JUST FOR COMMENTS ON PICTURES
+
 include '../includes/phptop.php';
 include '../includes/functions.php';
 
-?>
-
-<?php
 header('Location: ../public/photos.php');
-?>
 
-<?php 
-// In practice, to be set at login
-//$_SESSION["userID"] = 105;
-?>
-
-<?php
 $userID = $_SESSION["LoggedUserID"];
-?>
 
-<?php
 // need to get this from somewhere
 //$postID = 61;
 ?>
