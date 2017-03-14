@@ -21,6 +21,8 @@ CREATE TABLE `pictures`(
     `Picture`   varchar(200) NOT NULL, 
     `AlbumID`   int(10) NOT NULL, /* AlbumID added */
     PRIMARY KEY (`PictureID`)
+    CONSTRAINT fk_AlbumID FOREIGN KEY (`AlbumID`) 
+    REFERENCES albums(`AlbumID`)
 );
 
 CREATE TABLE `groups`(
@@ -29,12 +31,20 @@ CREATE TABLE `groups`(
     `Name`      varchar(100) NOT NULL,
     `PictureID` int(10),
     PRIMARY KEY (`GroupID`) /*Privacy removed */
+    CONSTRAINT fk_BlogID FOREIGN KEY (`BlogID`) 
+    REFERENCES blog_wall(`BlogID`)
+    CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
+    REFERENCES pictures(`PictureID`)
 );
 
 CREATE TABLE `group_members`(
     `GroupID`   int(10) NOT NULL,
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`GroupID`, `UserID`)
+    CONSTRAINT fk_GroupID FOREIGN KEY (`GroupID`) 
+    REFERENCES groups(`GroupID`)
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`)
 );
 
 CREATE TABLE `blog_wall`(
@@ -50,8 +60,12 @@ CREATE TABLE `posts`(
     `BlogID`    int(10) NOT NULL,
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `text`      varchar(100),
-    `AlbumID`   int(10),
+    `PictureID`   int(10),
     PRIMARY KEY (`PostID`)
+    CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
+    REFERENCES pictures(`PictureID`)
+    CONSTRAINT fk_BlogID FOREIGN KEY (`BlogID`) 
+    REFERENCES blog_wall(`BlogID`)
 );
 
 CREATE TABLE `albums`(
@@ -71,6 +85,10 @@ CREATE TABLE `comments`(
     `isPictures` boolean NOT NULL,
     `UserID`    int(4) NOT NULL,
     PRIMARY KEY (`CommentID`)
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`)
+    CONSTRAINT fk_PostID FOREIGN KEY (`PostID`) 
+    REFERENCES posts(`PostID`)
 );
 
 
@@ -79,6 +97,8 @@ CREATE TABLE `sentiments`(
     `Entity`    varchar(10) NOT NULL,
     `Sentiment` DECIMAL(7, 6),
     PRIMARY KEY (`UserID`, `Entity`)
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`) 
 );
 
 CREATE TABLE `message`(
@@ -89,6 +109,10 @@ CREATE TABLE `message`(
     `Photo`     varchar(200), /* changed data type from longblob to varchar(200) */
     `DateTime`  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added DEFAULT CURRENT_TIMESTAMP and removed length */
     PRIMARY KEY (`MessageID`)
+   CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`) 
+  CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
+    REFERENCES users(`ChatID`) 
 );
 
 CREATE TABLE `chat`(
@@ -102,6 +126,8 @@ CREATE TABLE `chat_members` (
     `ChatID`    int(10) NOT NULL,
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`ChatID`, `UserID`)
+  CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
+  REFERENCES chat(`ChatID`) 
 );
     
 CREATE TABLE `friend_requests` (
