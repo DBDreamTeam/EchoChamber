@@ -27,12 +27,9 @@ CREATE TABLE `pictures`(
 
 CREATE TABLE `groups`(
     `GroupID`   int(10) AUTO_INCREMENT NOT NULL,
-    `BlogID`    int(10) NOT NULL,
     `Name`      varchar(100) NOT NULL,
     `PictureID` int(10),
     PRIMARY KEY (`GroupID`) /*Privacy removed */
-    CONSTRAINT fk_BlogID FOREIGN KEY (`BlogID`) 
-    REFERENCES blog_wall(`BlogID`)
     CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
     REFERENCES pictures(`PictureID`)
 );
@@ -49,10 +46,9 @@ CREATE TABLE `group_members`(
 
 CREATE TABLE `blog_wall`(
     `BlogID`    int(100) AUTO_INCREMENT NOT NULL,
-    `IsGroup`   boolean NOT NULL,
     `OwnerID`   int(100) NOT NULL,
     `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL,
-    PRIMARY KEY (`ID`, `IsGroup`)
+    PRIMARY KEY (`BlogID`)
 );
 
 CREATE TABLE `posts`(
