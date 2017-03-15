@@ -49,6 +49,8 @@ CREATE TABLE `blog_wall`(
     `OwnerID`   int(100) NOT NULL,
     `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL,
     PRIMARY KEY (`BlogID`)
+  CONSTRAINT fk_UserID FOREIGN KEY (`OwnerID`) 
+    REFERENCES users(`UserID`)
 );
 
 CREATE TABLE `posts`(
