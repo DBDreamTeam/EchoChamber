@@ -1,6 +1,6 @@
 
 CREATE TABLE `users` (
-  `UserID` int(4) AUTO_INCREMENT NOT NULL,
+  `UserID` int(10) AUTO_INCREMENT NOT NULL,
   `Username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Email` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, /* email added */
@@ -77,9 +77,9 @@ CREATE TABLE `comments`(
     `CommentID` int(10) AUTO_INCREMENT NOT NULL,
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added default to current timestamp */
     `Text`      text NOT NULL, /* varchar(6) changed to text */
-    `PostID`    int(4) NOT NULL,
+    `PostID`    int(10) NOT NULL,
     `isPictures` boolean NOT NULL,
-    `UserID`    int(4) NOT NULL,
+    `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`CommentID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
     REFERENCES users(`UserID`)
@@ -128,8 +128,8 @@ CREATE TABLE `chat_members` (
     
 CREATE TABLE `friend_requests` (
     `id` INT(10) AUTO_INCREMENT NOT NULL, 
-    `user_from` INT(4) NOT NULL, 
-    `user_to` INT(4) NOT NULL, 
+    `user_from` INT(10) NOT NULL, 
+    `user_to` INT(10) NOT NULL, 
     PRIMARY KEY(`id`), 
     CONSTRAINT fk_user_from FOREIGN KEY (`user_from`) 
     REFERENCES users(`UserID`) 
