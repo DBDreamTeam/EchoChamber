@@ -73,6 +73,8 @@ CREATE TABLE `albums`(
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* default to current timestamp added */
     `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL DEFAULT 'Friends', /* 'Public' added */
     PRIMARY KEY (`AlbumID`)
+  CONSTRAINT fk_UserID FOREIGN KEY (`OwnerID`) 
+    REFERENCES users(`UserID`)
 );
 
 CREATE TABLE `comments`(
