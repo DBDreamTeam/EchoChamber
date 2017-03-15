@@ -2,17 +2,28 @@
 
 session_start();
 
-include 'connect.php';
-include 'header.php';
-include 'function.php';
-
-//this get the groupName variable from fetch.php
-if (!empty($_POST["groupName"])) {
-  //echo $_POST["testFriend"];
-  $_SESSION["groupName"] = $_POST["groupName"];
-}
-
+include("../includes/connect.php");
+//include("../includes/header.php");
+include("../includes/functions.php");
 ?>
+<script src="jquery.js"></script>
+<script>
+    $(document).ready(function (e) {
+        $("#search").keyup(function) {
+            $("#here").show();
+            var x = $(this).val();
+            $.ajax({
+                url:'fetch.php',
+                type:'GET',
+                data:'keyword='+key,
+                success:function (data) {
+                    $("#here").html(data);
+                    $("#here").slideDown('fast');
+                }
+            });
+        });
+    });
+</script>
 
 <html>
 <head>
@@ -50,10 +61,11 @@ if (!empty($_POST["groupName"])) {
 <div>
 
   <?php
+  print_r($_SESSION);
   //get the userID of current logged user
     $user = $_SESSION["loggedUser"];
     $getLoggedUserIDSql = "SELECT UserID FROM users WHERE Username ='$user'";
-    $getLoggedUserIDResult = $conn->query($getLoggedUserIDSql);
+    $getLoggedUserIDResult = $link->query($getLoggedUserIDSql);
     while($row = $getLoggedUserIDResult->fetch_assoc()) {
       $LoggedUserID = $row['UserID'];
     }
@@ -61,7 +73,7 @@ if (!empty($_POST["groupName"])) {
   //get the groupID
   $groupName = $_SESSION["groupName"];
   $getGroupIDSql = "SELECT GroupID FROM groups WHERE Name ='$groupName'";
-  $getGroupIDResult = $conn->query($getGroupIDSql);
+  $getGroupIDResult = $link->query($getGroupIDSql);
   while($row = $getGroupIDResult->fetch_assoc()) {
     $GroupID = $row['GroupID'];
   }
@@ -72,28 +84,28 @@ if (!empty($_POST["groupName"])) {
 
   //Query from group table to see if they are part of the group
   $groupMemQuery = "SELECT * FROM group_members WHERE UserID ='$LoggedUserID' AND GroupID = '$GroupID'";
-  $isGroupMember = $conn->query($groupMemQuery);
+  $isGroupMember = $link->query($groupMemQuery);
 
   //find the blogID
-  $getBlogIDQuery = "SELECT BlogID FROM blog_wall WHERE IsGroup = '1' AND OwnerID ='$GroupID'";
-  $getBlogIDResult = $conn->query($getBlogIDQuery);
+  $getBlogIDQuery = "SELECT ID FROM blog_wall WHERE IsGroup = '1' AND OwnerID ='$GroupID'";
+  $getBlogIDResult = $link->query($getBlogIDQuery);
   while($row = $getBlogIDResult->fetch_assoc()) {
   //Store blogID into a variable
-  $BlogID = $row['BlogID'];
+  $BlogID = $row['ID'];
   }
 
   //Store blogID into session variable
   $_SESSION["BlogID"] = $BlogID;
 
   //Check privacy of blog
-  $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE BlogID = '$BlogID'";
-  $privacyResult = $conn->query($checkPrivacy);
+  $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE ID = '$BlogID'";
+  $privacyResult = $link->query($checkPrivacy);
     while($row = $privacyResult->fetch_assoc()) {
       $privacy = $row['Privacy'];
     }
 
   ?>
-
+  
 <!-- Search session -->
 <h1>search </h1>
 <form method = "POST" action = "fetch.php">
@@ -125,7 +137,7 @@ if (!empty($_POST["groupName"])) {
 if ($privacy == 'Friends') {
   if(mysqli_num_rows($isGroupMember)>=1){
     $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $conn->query($loadBlog);
+    $loadBlogResult = $link->query($loadBlog);
     while($row = $loadBlogResult->fetch_assoc()) {
       echo "Previous Blog: ";
       echo '<br>';
@@ -138,7 +150,7 @@ if ($privacy == 'Friends') {
   }
 } elseif ($privacy == 'Public') {
     $loadBlog1 = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult1 = $conn->query($loadBlog1);
+    $loadBlogResult1 = $link->query($loadBlog1);
     while($row = $loadBlogResult1->fetch_assoc()) {
       echo "Previous Blog: ";
       echo '<br>';
@@ -176,7 +188,7 @@ if ($privacy == 'Friends') {
 $loadGroupMem = "SELECT u.Username FROM users u
 INNER JOIN group_members g ON u.UserID = g.UserID
 WHERE g.GroupID = '$GroupID'";
-$loadGroupMemResult = $conn->query($loadGroupMem);
+$loadGroupMemResult = $link->query($loadGroupMem);
 
  ?>
 
@@ -220,10 +232,10 @@ echo '<br>';
 			<?php
 			if(isset($_POST['leaveGroup'])) {
 				$leaveQuery = "DELETE FROM group_members WHERE GroupID = '$GroupID' AND UserID = '$LoggedUserID'";
-				if ($conn -> query($leaveQuery) === TRUE) {
+				if ($link -> query($leaveQuery) === TRUE) {
 				  echo "Leave successfully";
  				} else {
-					echo "Error: ". $leaveQuery . "<br>" . $conn->error;
+					echo "Error: ". $leaveQuery . "<br>" . $link->error;
         		}
 			}
 	?>
@@ -238,10 +250,10 @@ echo '<br>';
 		<?php
 		if(isset($_POST['joinGroup'])) {
 			$joinQuery = "INSERT INTO group_members (GroupID, UserID) VALUES ('$GroupID', '$LoggedUserID')";
-			if ($conn -> query($joinQuery) === TRUE) {
+			if ($link -> query($joinQuery) === TRUE) {
             echo "Join successfully";
 			} else {
-            	echo "Error: ". $joinQuery . "<br>" . $conn->error;
+            	echo "Error: ". $joinQuery . "<br>" . $link->error;
         	}
 		}
 	   ?>
