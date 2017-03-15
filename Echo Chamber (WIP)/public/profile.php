@@ -176,13 +176,22 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             $blogID = getBlogID($FriendUserID, $_SESSION["isGroup"], $link);
             $blog_privacy = getBlogPrivacySettings($blogID, $link);
             
-            if (
-              $blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link)
-              || $blog_privacy == "Circles" && inSameCircle($LoggedUserID, $FriendUserID, $link)
-              || $blog_privacy == "FriendsOfFriends" && isFriendOfFriend($LoggedUserID, $FriendUserID, $link)
-              || $blog_privacy == "Public"
-              ) {
-              
+            //if (
+            //  $blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link)
+             // || $blog_privacy == "Circles" && inSameCircle($LoggedUserID, $FriendUserID, $link)
+            ///  || $blog_privacy == "FriendsOfFriends" && isFriendOfFriend($LoggedUserID, $FriendUserID, $link)
+            //|| $blog_privacy == "Public"
+             // ) {
+          
+           //Edited the part for circles and FoF
+           //Previously, if Mabel is friend with Mairi. If Mairi sets as FoF, it won't allow Mabel to see Mairi's post
+           if (
+           $blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link)
+           || $blog_privacy == "Circles" && (inSameCircle($LoggedUserID, $FriendUserID, $link) || isFriends($LoggedUserID, $FriendUserID, $link))
+           || $blog_privacy == "FriendsOfFriends" && (isFriendOfFriend($LoggedUserID, $FriendUserID, $link)|| isFriends($LoggedUserID, $FriendUserID, $link))
+           || $blog_privacy == "Public"
+           ) {
+            
               $users_posts_sql = "
                 SELECT PostID FROM posts
                     JOIN blog_wall
