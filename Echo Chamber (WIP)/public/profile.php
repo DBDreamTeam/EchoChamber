@@ -68,7 +68,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                   </ul>
                   <ul class="nav navbar-nav navbar-right">
                     <li><a><button type="submit" name="nav" value="myFeed" class="nav-link" form="nav-form">My Feed</button></a></li>
-                    <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">My Profile</button></a></li>
                     <li><a><button type="submit" name="nav" value="chat" class="nav-link" form="nav-form">Chat</button></a></li>
                     <li><a><button type="submit" name="nav" value="myAccount" class="nav-link" form="nav-form">My Account</button></a></li>
                     <li><a><button type="submit" name="nav" value="logout" class="nav-link" form="nav-form">Log Out</button></a></li>
@@ -82,7 +82,12 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <!-- TODO: Add the new post box here -->
         <div class="row">
           <div class="col-sm-2">
-            <img src="img/ECLogo1.png" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture">
+            <?php 
+            $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
+            $profile_pic_result = $link->query($profile_pic_sql);
+            if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
+            <img src="<?php echo getImagePathFromID($pic_id, $link); ?>" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture">
+            <?php } ?>
           </div>
           <div class="col-sm-10" id="new-post">
             
@@ -165,6 +170,40 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
           
           <!-- Main area (posts, photos etc) -->
           <div class="col-sm-8" id="main-feed">
+            
+            <?php
+            // Not 100% sure that $_SESSION['ID'] is BlogID, but I think it is
+            // $_SESSION['ID'] doesn't actually seem to be set anywhere any more so it probably isn't
+            // ...but neither is $_SESSION['BlogID'] that I can find...
+            $blog_privacy = getBlogPrivacySettings($_SESSION['ID'], $link);
+            
+            if (
+              $blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link)
+              || $blog_privacy == "Circles" && inSameCircle($LoggedUserID, $FriendUserID, $link)
+              || $blog_privacy == "FriendsOfFriends" && isFriendOfFriend($LoggedUserID, $FriendUserID, $link)
+              || $blog_privacy == "Public"
+              ) {
+              
+              $users_posts_sql = "
+                SELECT PostID FROM posts
+                    JOIN blog_wall
+                    ON posts.BlogID = blog_wall.ID
+                    WHERE blog_wall.OwnerID = $FriendUserID
+                    AND blog_wall.IsGroup = 0";
+              $users_posts_result = $link->query($users_posts_sql);
+              while ($row = $users_posts_result->fetch_assoc()) {
+                $postID = $row['PostID'];
+                getFeedItemHTML($postID, $link);
+              } 
+            } else {
+              ?>
+              <h4>Sorry, you are not allowed to view these posts.</h4>
+              <?php
+            }
+            
+            
+            
+            ?>
             
             <div class="feed-item" id="1">
               <h5>Zak Walters</h5>
