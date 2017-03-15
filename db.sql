@@ -128,6 +128,8 @@ CREATE TABLE `chat_members` (
     PRIMARY KEY (`ChatID`, `UserID`)
   CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
   REFERENCES chat(`ChatID`) 
+  CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+  REFERENCES users(`UserID`) 
 );
     
 CREATE TABLE `friend_requests` (
