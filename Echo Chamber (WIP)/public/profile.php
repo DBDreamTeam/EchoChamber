@@ -80,19 +80,16 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <!-- End navbar -->
         
         <!-- TODO: Add the new post box here -->
+ 
+        
+        
         <div class="row">
           <div class="col-sm-2">
-            <?php 
-            $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
-            $profile_pic_result = $link->query($profile_pic_sql);
-            if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
-            <img src="<?php echo getImagePathFromID($pic_id, $link); ?>" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture">
-            <?php } ?>
+            <img src="<?php echo getProfilePicPath($FriendUserID, $link); ?>" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture" width="200" height="200">
           </div>
           <div class="col-sm-10" id="new-post">
             
             <h3><?php echo $CheckFriend; ?></h3>
-            
             
             
             <!-- START OF MABEL'S STUFF -->
@@ -118,20 +115,20 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
 
             //find the blogID
             $getBlogIDQuery = "
-                SELECT ID FROM blog_wall 
+                SELECT BlogID FROM blog_wall 
                     WHERE IsGroup = 0 
                     AND OwnerID ='$FriendUserID'";
             $getBlogIDResult = $link->query($getBlogIDQuery);
             while($row = $getBlogIDResult->fetch_assoc()) {
               //Store blogID into a variable
-              $BlogID = $row['ID'];
-              $_SESSION["ID"] = $BlogID;
+              $BlogID = $row['BlogID'];
+              $_SESSION["BlogID"] = $BlogID;
             }
 
             //Store blogID into session variable
 
             //Check privacy of blog
-            $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE ID = '$BlogID'";
+            $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE BlogID = '$BlogID'";
             $privacyResult = $link->query($checkPrivacy);
             while($row = $privacyResult->fetch_assoc()) {
               $privacy = $row['Privacy'];
@@ -143,9 +140,9 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             if ($user == $CheckFriend) { 
             ?>
               <!-- https://www.w3schools.com/css/css_form.asp -->
-              <form method = "POST" action = "../process/blog.php">
+              <form method = "POST" action = "../process/blog.php" enctype="multipart/form-data">
                 <input type="hidden" name="BlogID" value="<?php
-                $sql = "SELECT ID FROM blog_wall
+                $sql = "SELECT BlogID FROM blog_wall
                             WHERE OwnerID = $LoggedUserID";
                 $result = $link->query($sql);
                 if ($result) {
@@ -153,6 +150,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                 }
                 ?>">
                 <textarea id = "blogText" name="blogInput" placeholder="Write a new post"></textarea>
+                <input type="file" name="uploadedimage">
                 <input type="submit" class="btn btn-default pull-right" value="Post" name="submitBlog">
               </form>
             <?php  
@@ -175,7 +173,8 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             // Not 100% sure that $_SESSION['ID'] is BlogID, but I think it is
             // $_SESSION['ID'] doesn't actually seem to be set anywhere any more so it probably isn't
             // ...but neither is $_SESSION['BlogID'] that I can find...
-            $blog_privacy = getBlogPrivacySettings($_SESSION['ID'], $link);
+            $blogID = getBlogID($FriendUserID, 0, $link);
+            $blog_privacy = getBlogPrivacySettings($blogID, $link);
             
             if (
               $blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link)
@@ -187,7 +186,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
               $users_posts_sql = "
                 SELECT PostID FROM posts
                     JOIN blog_wall
-                    ON posts.BlogID = blog_wall.ID
+                    ON posts.BlogID = blog_wall.BlogID
                     WHERE blog_wall.OwnerID = $FriendUserID
                     AND blog_wall.IsGroup = 0";
               $users_posts_result = $link->query($users_posts_sql);
