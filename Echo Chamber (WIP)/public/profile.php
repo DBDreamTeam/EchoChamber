@@ -173,7 +173,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             // Not 100% sure that $_SESSION['ID'] is BlogID, but I think it is
             // $_SESSION['ID'] doesn't actually seem to be set anywhere any more so it probably isn't
             // ...but neither is $_SESSION['BlogID'] that I can find...
-            $blogID = getBlogID($FriendUserID, 0, $link);
+            $blogID = getBlogID($FriendUserID, $_SESSION["isGroup"], $link);
             $blog_privacy = getBlogPrivacySettings($blogID, $link);
             
             if (
