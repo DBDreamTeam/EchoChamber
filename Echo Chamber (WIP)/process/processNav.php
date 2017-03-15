@@ -19,9 +19,10 @@ if($location == "profile") {
     $_SESSION['albumID'] = "allPhotos";
     header('Location: ../public/photos.php');
 } elseif($location == "myFeed"){
-    header('Location: ../public/feed.php');
+    header('Location: ../public/landing.php');
 } elseif($location == "myProfile"){
     header('Location: ../public/profile.php');
+    $_SESSION['FriendUserID'] = $_SESSION['LoggedUserID'];
 } elseif($location == "chat"){
     header('Location: ../public/chat.php');
 } elseif($location == "myAccount"){
