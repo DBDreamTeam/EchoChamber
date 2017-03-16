@@ -5,7 +5,7 @@ CREATE TABLE `users` (
   `Password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Email` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL, /* email added */
   `Birthday` date NOT NULL,
-  `PictureID` int(11), /* NOT NULL removed */
+  `PictureID` int(10), /* NOT NULL removed */
   PRIMARY KEY (`UserID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -106,7 +106,7 @@ CREATE TABLE `sentiments`(
 
 CREATE TABLE `entity`(
     `EntityID`    int(10) NOT NULL AUTO_INCREMENT,
-    `Entity`    varchar(10) NOT NULL,
+    `Entity`    varchar(100) NOT NULL,
     PRIMARY KEY (`EntityID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
     REFERENCES users(`UserID`) 
