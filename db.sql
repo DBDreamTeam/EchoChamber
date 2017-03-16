@@ -29,6 +29,7 @@ CREATE TABLE `groups`(
     `GroupID`   int(10) AUTO_INCREMENT NOT NULL,
     `Name`      varchar(100) NOT NULL,
     `PictureID` int(10),
+    `Privacy` enum('Friends','Circles','FriendsOfFriends') NOT NULL
     PRIMARY KEY (`GroupID`) /*Privacy removed */
     CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
     REFERENCES pictures(`PictureID`)
@@ -45,8 +46,8 @@ CREATE TABLE `group_members`(
 );
 
 CREATE TABLE `blog_wall`(
-    `BlogID`    int(100) AUTO_INCREMENT NOT NULL,
-    `OwnerID`   int(100) NOT NULL,
+    `BlogID`    int(10) AUTO_INCREMENT NOT NULL,
+    `OwnerID`   int(10) NOT NULL,
     `Privacy`   enum('Friends', 'Circles', 'FriendsOfFriends', 'Public') NOT NULL,
     PRIMARY KEY (`BlogID`)
   CONSTRAINT fk_UserID FOREIGN KEY (`OwnerID`) 
@@ -67,7 +68,7 @@ CREATE TABLE `posts`(
 );
 
 CREATE TABLE `albums`(
-    `AlbumID`   int AUTO_INCREMENT NOT NULL, /* AI added */
+    `AlbumID`   int(10) AUTO_INCREMENT NOT NULL, /* AI added */
     `AlbumName` varchar(100) DEFAULT 'My Album', /* Album name added */
     `OwnerID`   int NOT NULL,
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* default to current timestamp added */
@@ -82,7 +83,7 @@ CREATE TABLE `comments`(
     `Time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added default to current timestamp */
     `Text`      text NOT NULL, /* varchar(6) changed to text */
     `PostID`    int(10) NOT NULL,
-    `isPictures` boolean NOT NULL,
+    `isPictures` boolean NOT NULL, /*if the post is a picture, enable commenting on it*/
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`CommentID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
@@ -94,9 +95,19 @@ CREATE TABLE `comments`(
 
 CREATE TABLE `sentiments`(
     `UserID`    int(10) NOT NULL,
+    `EntityID`    int(10) NOT NULL,
+    `Sentiment` enum('positive','neutral','negative') NOT NULL DEFAULT 'neutral',
+    PRIMARY KEY (`UserID`, `EntityID`)
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`) 
+   CONSTRAINT fk_EntityID FOREIGN KEY (`EntityID`) 
+    REFERENCES entity(`EntityID`) 
+);
+
+CREATE TABLE `entity`(
+    `EntityID`    int(10) NOT NULL AUTO_INCREMENT,
     `Entity`    varchar(10) NOT NULL,
-    `Sentiment` DECIMAL(7, 6),
-    PRIMARY KEY (`UserID`, `Entity`)
+    PRIMARY KEY (`EntityID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
     REFERENCES users(`UserID`) 
 );
@@ -111,7 +122,7 @@ CREATE TABLE `message`(
     PRIMARY KEY (`MessageID`)
    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
     REFERENCES users(`UserID`) 
-  CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
+    CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
     REFERENCES users(`ChatID`) 
 );
 
