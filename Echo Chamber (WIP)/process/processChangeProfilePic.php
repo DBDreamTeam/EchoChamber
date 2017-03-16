@@ -5,7 +5,7 @@ session_start();
 ?>
 
 <?php
-//header('Location: ../public/manageAccount.php');
+header('Location: ../public/manageAccount.php');
 ?>
 
 <?php
