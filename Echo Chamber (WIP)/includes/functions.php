@@ -173,6 +173,7 @@ function getImagePathFromID($imageID, $conn) {
     if(mysqli_num_rows($imagePathResult) > 0) {
         while($row = mysqli_fetch_assoc($imagePathResult)) {
             $imagePath = $row["Picture"];
+            break;
         }
     }
     return $imagePath;
@@ -1261,16 +1262,38 @@ function getFriendRecommendations($user_id, $conn) {
   
 }
 
+/*
+function getUsernameFromID($idUser, $conn) {
+    $username = null;
+    
+    $selectUsername = "SELECT Username FROM users WHERE UserID = {$idUser}";
+    
+    $usernameResult = mysqli_query($conn, $selectUsername);
+    
+    if(mysqli_num_rows($usernameResult) > 0) {
+        while($row = mysqli_fetch_assoc($usernameResult)) {
+            $username = $row["Username"];
+        }
+    }
+    return $username;
+}*/
+
 // returns path to user's profile picture
 function getProfilePicPath($userID, $conn) {
-     $image_path = null;
- 
-     $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $userID LIMIT 1";
-     $profile_pic_result = $conn->query($profile_pic_sql);
-     if($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) {
-         $image_path = getImagePathFromID($pic_id, $conn);
-      }
-   return $image_path;
+    $imagePath = null;
+    
+    $getPicID = "SELECT PictureID FROM users WHERE UserID = {$userID}";
+    
+    $result = mysqli_query($conn, $getPicID);
+    
+    if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $picID = $row["PictureID"];
+            $imagePath = getImagePathFromID($picID, $conn);
+            break;
+        }
+    }
+    return $imagePath;
  }
 
 /*
