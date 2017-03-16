@@ -173,7 +173,6 @@ function getImagePathFromID($imageID, $conn) {
     if(mysqli_num_rows($imagePathResult) > 0) {
         while($row = mysqli_fetch_assoc($imagePathResult)) {
             $imagePath = $row["Picture"];
-            break;
         }
     }
     return $imagePath;
@@ -405,7 +404,13 @@ function printComments($picID, $conn) {
     
     if(mysqli_num_rows($commentsResult) > 0) {
         while($row = mysqli_fetch_assoc($commentsResult)) {
-            echo $row["Time"] . "<br>" . $row["Username"] . "<br>" . $row["Text"] . "<br>";
+            ?>
+          <div class="comment">
+            <p><b><?php echo $row["Username"]; ?></b></p>
+            <p><?php echo $row["Text"]; ?></p>
+            <p><?php echo $row["Time"]; ?></p>
+          </div>
+            <?php
         }
     }
 }
@@ -417,7 +422,7 @@ function printCommentForm($picID, $i) {
     
     echo "<input type = \"hidden\" name = \"picID\" value = ". $picID ." \">";
 
-    echo "<input type = \"submit\">";
+    echo "<input type = \"submit\" class=\"btn btn-default\">";
     echo "</form>";
 }
 
@@ -777,9 +782,14 @@ function displayAllAccessiblePhotos($loggedUser, $pageOwner, $conn) {
                 || (($row["Privacy"] == "Friends") AND ($isFriends == 1))
                 || (($row["Privacy"] == "FriendsOfFriends") && ($isFriendOfFriend == 1))
                 || (($row["Privacy"] == "Circle") && ($inSameCircle == 1))) {
-                        echo "<img src = \"" . $row["Picture"] . "\" width=\"200\" height=\"200\" id=\"" . $row["PictureID"] . "\"> <br>";
+               
+                        ?>
+                        <div class="feed-item">
+                          <img src ="<?php echo $row["Picture"]; ?>" id="<?php echo $row["PictureID"]; ?>" class="feed-photo">
+                        <?php
                         printComments($row["PictureID"], $conn);
                         printCommentForm($row["PictureID"], $i);
+                        echo "</div>";
                         $i++;
             }
         }
@@ -1261,22 +1271,6 @@ function getFriendRecommendations($user_id, $conn) {
   return array_keys($recommended_friends);
   
 }
-
-/*
-function getUsernameFromID($idUser, $conn) {
-    $username = null;
-    
-    $selectUsername = "SELECT Username FROM users WHERE UserID = {$idUser}";
-    
-    $usernameResult = mysqli_query($conn, $selectUsername);
-    
-    if(mysqli_num_rows($usernameResult) > 0) {
-        while($row = mysqli_fetch_assoc($usernameResult)) {
-            $username = $row["Username"];
-        }
-    }
-    return $username;
-}*/
 
 // returns path to user's profile picture
 function getProfilePicPath($userID, $conn) {
