@@ -24,18 +24,18 @@ if(!empty($_FILES["uploadedimage"]["name"])){
     $doesAlbumExist = doesAlbumNameExist("Blog Pictures", $LoggedUserID, $link);
     
     if($doesAlbumExist == 1) {
-    // if a "Blog Pictures" album does exist, get the albumID and add the new blog picture to it
-    $albumID = getAlbumIDFromName('Blog Pictures', $LoggedUserID, $link);
-    $picID = insertImageNew($albumID, "uploadedimage", $link);
-    echo "Album exist <br>";
+        // if a "Blog Pictures" album does exist, get the albumID and add the new blog picture to it
+        $albumID = getAlbumIDFromName('Blog Pictures', $LoggedUserID, $link);
+        $picID = insertImageNew($albumID, "uploadedimage", $link);
+        echo "Album exist <br>";
     } else {
-    // if the album does not already exist, create it and add the picture to it
-    $albumID = insertAlbum('Blog Pictures', $LoggedUserID, 'Friends', $link);
-    $picID = insertImageNew($albumID, "uploadedImage", $link);
+        // if the album does not already exist, create it and add the picture to it
+        $albumID = insertAlbum('Blog Pictures', $LoggedUserID, 'Friends', $link);
+        $picID = insertImageNew($albumID, "uploadedImage", $link);
     }
 }
 
-$insertBlog = "INSERT INTO posts (BlogID, text, PictureID) VALUES ('$BlogID','$blogInput', $albumID)";
+$insertBlog = "INSERT INTO posts (BlogID, text, PictureID) VALUES ('$BlogID','$blogInput', $picID)";
 if ($link -> query($insertBlog) === TRUE) {
 } else {
   echo "Error: ". $insertBlog . "<br>" . $link->error;
