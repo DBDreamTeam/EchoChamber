@@ -313,7 +313,10 @@ if (!empty($_POST['searchTxt'])) {
                 ?>
                 <!-- show the friend's name and an add friend button -->
                 <div class="suggestion">
-                  <button class="profile-link"><b><?php echo $row['Username']; ?></b></button>
+                  <form action="../process/processSeeFriend.php" method="post">
+                    <input type="hidden" name="friendID" value="<?php echo $row['UserID']; ?>">
+                    <button type="submit" class="profile-link"><b><?php echo $row['Username']; ?></b></button>
+                  </form>
                   	<form method="POST">
                       <input <?php 
                         if (isset($_POST['add' . $row['UserID']])) { 
