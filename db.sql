@@ -13,7 +13,7 @@ CREATE TABLE `friendships` (
     `UserOne`   int(10) NOT NULL,
     `UserTwo`   int(10) NOT NULL,
     PRIMARY KEY (`UserOne`, `UserTwo`),
-    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserOne`) 
     REFERENCES users(`UserID`)
 );
 
@@ -110,8 +110,8 @@ CREATE TABLE `entity`(
     `EntityID`    int(10) NOT NULL AUTO_INCREMENT,
     `Entity`    varchar(100) NOT NULL,
     PRIMARY KEY (`EntityID`),
-    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
-    REFERENCES users(`UserID`) 
+    CONSTRAINT fk_EntityID FOREIGN KEY (`EntityID`) 
+    REFERENCES sentiments(`EntityID`)
 );
 
 CREATE TABLE `message`(
