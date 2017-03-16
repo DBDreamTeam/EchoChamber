@@ -20,7 +20,7 @@ echo $postID;
 $commentText = $_POST["comment"];
 echo $commentText;
 
-insertComment($userID, $commentText, $postID, $link);
+insertComment($userID, $commentText, $postID, 1, $link);
         
 ?>
 
