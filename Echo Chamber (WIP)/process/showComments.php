@@ -18,7 +18,8 @@ $post_id = $_POST['postID'];
 
 $sql = "
     SELECT * FROM comments
-        WHERE PostID = $post_id
+        WHERE PostID = $post_id 
+        AND isPictures = 0
         ORDER BY Time DESC";
 $result = $link->query($sql);
 
