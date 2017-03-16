@@ -76,7 +76,6 @@ function insertGroupMembers ($idGroup, $groupMembers, $conn) {
         $insertGroupMembers = "INSERT INTO group_members(GroupID, UserID) VALUE ({$idGroup}, {$groupMembers[$i]})";
         
         if ($conn -> query($insertGroupMembers) === TRUE) {
-            echo "Group members successfully inserted into group_members <br>";
         } else {
             echo "Error: ". $insertGroupMembers . "<br>" . $conn->error;
         }
@@ -239,7 +238,7 @@ function getUserAlbumsCB($userID, $conn) {
 
     if(mysqli_num_rows($albumsResult) > 0) {
         while($row = mysqli_fetch_assoc($albumsResult)) {
-            echo "<option value = \"". $row["AlbumName"] . "\">" . $row["AlbumName"] . "</option><br>";
+            echo "<option value = \"". $row["AlbumName"] . "\">" . $row["AlbumName"] . "</option>";
         }
     } else {
         echo "No albums yet.";
@@ -340,7 +339,7 @@ function displayAlbumPhotos($albumID, $conn) {
     $i=1;
     if(mysqli_num_rows($albumPicsResult) > 0) {
         while($row = mysqli_fetch_assoc($albumPicsResult)) {
-            echo "<img src = \"". $row["Picture"] . "\" width=\"200\" height=\"200\"> <br>";
+            echo "<img src = \"" . $row["Picture"] . "\" class=\"feed-photo\"> <br>";
             printComments($row["PictureID"], $conn);
             printCommentForm($row["PictureID"], $i);
             $i++;
@@ -425,23 +424,15 @@ function printCommentForm($picID, $i) {
 // gets the user IDs of the members of the specified circle ID (an array) and returns an array of these IDs
 function getCircleMemberIDs($circleID, $conn) {
     $circleMembers = array();
-    $i = 0;
     
-    for($j=0; $j<count($circleID); $j++) {
-        $selectCircleIDs = "SELECT UserID FROM group_members WHERE GroupID = {$circleID[$j]}";
+    $selectCircleIDs = "SELECT UserID FROM group_members WHERE GroupID = {$circleID}";
 
-        $circleIDsResult = mysqli_query($conn, $selectCircleIDs);
+    $circleIDsResult = mysqli_query($conn, $selectCircleIDs);
 
-        if(mysqli_num_rows($circleIDsResult) > 0) {
-            while($row = mysqli_fetch_assoc($circleIDsResult)) {
-                $circleMembers[$i] = $row["UserID"];
-                $i++;
-            }
-        }
+    while($row = mysqli_fetch_assoc($circleIDsResult)) {
+        $circleMembers[] = $row["UserID"];
     }
-    echo " Circle Member IDs: <br>";
-    print_r($circleMembers);
-    echo "<br>";
+    
     return $circleMembers;
 }
 
@@ -607,7 +598,12 @@ function displayChatMembers($IDforChat, $userID, $conn) {
     if(mysqli_num_rows($chatMembersResult) > 0) {
         while($row = mysqli_fetch_assoc($chatMembersResult)) {
             if($row["UserID"] != $userID) {
-                echo $row["UserName"] . ", ";
+              ?>
+              <form action="../process/processSeeFriend.php" method="post">
+                <input type="hidden" name="friendID" value="<?php echo $row["UserID"]; ?>">
+                <button type="submit" class="profile-link" style="display: inline"><b><?php echo $row['UserName']; ?></b></button>
+              </form>
+              <?php
             }
         }
     }
@@ -618,20 +614,25 @@ function retrieveMessages($idChat, $conn) {
     $msgArray = array();
     $i = 0;
 
-    $selectMsgs = "SELECT UserID, Text, Photo, DateTime FROM message WHERE ChatID = {$idChat}";
+    $selectMsgs = "SELECT UserID, Text, Photo, DateTime FROM message WHERE ChatID = {$idChat} ORDER BY DateTime DESC";
     
     $msgsResult = mysqli_query($conn, $selectMsgs);
     
     if(mysqli_num_rows($msgsResult) > 0) {
         while($row = mysqli_fetch_assoc($msgsResult)) {
-            echo getUsernameFromID($row["UserID"], $conn) . "<br>";
-            echo $row["DateTime"] . "<br>";
-            echo $row["Text"]. "<br>";
+          ?>
+          <div class="feed-item">
+            <p><b><?php echo getUsernameFromID($row["UserID"], $conn); ?></b></p>
+            <p><?php echo $row["Text"]; ?></p>
+            <p><?php echo $row["DateTime"]; ?></p>
+          <?php
             
             if($row["Photo"] != null) {
                 echo "<img src = \"../process/" . getImagePathFromID($row["Photo"], $conn) . "\" width=\"200\" height=\"200\"> <br>";
             }
-            echo "<br>";
+            ?>
+            </div>
+            <?php
         }
     }
     //print_r($msgArray);
@@ -670,9 +671,6 @@ function getUserAlbumsArr($userID, $conn) {
             $i++;
         }
     }
-    echo "Albums for user {$userID} <br>:";
-    print_r($userAlbums);
-    echo "<br>";
     return $userAlbums;
 }
 
@@ -684,7 +682,6 @@ function getBlogPrivacySettings($blogID, $link) {
   $result = $link->query($sql);
   return $result->fetch_assoc()['Privacy'];
 }
-
 
 function getAlbumPrivacySettings($albumID, $conn) {
     $privacy = null;
@@ -698,12 +695,19 @@ function getAlbumPrivacySettings($albumID, $conn) {
         if(mysqli_num_rows($result) >0) {
             $row = mysqli_fetch_assoc($result);
             $privacy = $row["Privacy"];
-            echo $privacy;
         }
     } else {
         echo "Error: ". $stmt. "<br>" . $conn->error;
     }
     return $privacy;
+}
+
+function getGroupPrivacySettings($groupID, $link) {
+  $sql = "SELECT Privacy FROM groups WHERE GroupID = $groupID";
+  $result = $link->query($sql);
+  if ($row = $result->fetch_assoc()) {
+    return $row['Privacy'];
+  }
 }
 
 // gets Album IDs for users albums
@@ -772,7 +776,7 @@ function displayAllAccessiblePhotos($loggedUser, $pageOwner, $conn) {
                 || (($row["Privacy"] == "Friends") AND ($isFriends == 1))
                 || (($row["Privacy"] == "FriendsOfFriends") && ($isFriendOfFriend == 1))
                 || (($row["Privacy"] == "Circle") && ($inSameCircle == 1))) {
-                        echo "<img src = \" ". $row["Picture"] . "\" width=\"200\" height=\"200\" id=\"" . $row["PictureID"] . "\"> <br>";
+                        echo "<img src = \"" . $row["Picture"] . "\" width=\"200\" height=\"200\" id=\"" . $row["PictureID"] . "\"> <br>";
                         printComments($row["PictureID"], $conn);
                         printCommentForm($row["PictureID"], $i);
                         $i++;
@@ -1212,7 +1216,7 @@ function getFriendRecommendations($user_id, $conn) {
           AND g1.UserID <> g2.UserID
           AND g2.UserID NOT IN ($friends_sql)
           GROUP BY g2.UserID
-          ORDER BY count";
+          ORDER BY count DESC";
   
   $common_circles_result = $conn->query($common_circles_sql);
   
@@ -1259,14 +1263,91 @@ function getFriendRecommendations($user_id, $conn) {
 
 // returns path to user's profile picture
 function getProfilePicPath($userID, $conn) {
-    $image_path = null;
-
-    $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $userID LIMIT 1";
-    $profile_pic_result = $conn->query($profile_pic_sql);
-    if($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) {
-        $image_path = getImagePathFromID($pic_id, $conn);
-    }
-    return $image_path;
-}
+     $image_path = null;
  
+     $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $userID LIMIT 1";
+     $profile_pic_result = $conn->query($profile_pic_sql);
+     if($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) {
+         $image_path = getImagePathFromID($pic_id, $conn);
+      }
+   return $image_path;
+ }
+
+/*
+Gets a list of GroupIDs to recommend to a given user, ordered
+by the number of their friends who are members of the group
+*/
+function getGroupRecommendations($user_id, $conn) {
+  
+  /*
+  Subquery to get a list of groups that the user already belongs to
+  */
+  $groups_user_is_in_sql = "
+      SELECT GroupID FROM group_members
+          WHERE UserID = $user_id";
+  
+  /*
+  Gets an ordered list of groups the user doesn't belond to based on 
+  how many of their friends are in the group
+  */
+  $friends_in_group_sql = "
+      SELECT GroupID, COUNT(UserID) AS count FROM group_members
+          WHERE GroupID NOT IN ($groups_user_is_in_sql)
+          AND UserID IN (
+              SELECT UserTwo FROM friendships
+                  WHERE UserOne = $user_id
+              )
+          GROUP BY GroupID
+          ORDER BY count DESC";
+  
+  $result = $conn->query($friends_in_group_sql);
+  
+  // Create an array of the GroupIDs to return
+  $recommended_groups = array();
+  if ($result) {
+    while ($row = $result->fetch_assoc()) {
+      $recommended_groups[] = $row['GroupID'];
+    }
+  }
+  
+  return $recommended_groups;
+  
+}
+    
+/*
+Takes a PostID and prints the html to display that post in a feed
+*/
+function getFeedItemHTML($post_id, $link) {
+  
+  $sql = "
+      SELECT * FROM posts 
+          JOIN blog_wall
+          ON posts.BlogID = blog_wall.BlogID
+          WHERE PostID = $post_id";
+  $result = $link->query($sql);
+  if ($row = $result->fetch_assoc()) { 
+    
+    ?>
+
+    <div class="feed-item" id="<?php echo $post_id; ?>">
+      <h5><?php echo getUsernameFromID($row['OwnerID'], $link); //Group/User's name goes here ?></h5>
+      <p><?php echo $row['text']; ?></p>
+      
+    <?php
+      if ($row['PictureID']) {
+        // Show the photo
+        ?>
+      <img src="<? echo getImagePathFromID($row['PictureID'], $link); ?>" class="feed-photo">
+        <?php
+      }
+    ?>
+      
+      <p><?php echo $row['Time']; ?></p>
+    </div>
+    
+    <?php
+  }
+}
+
+
 ?>
