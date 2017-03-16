@@ -1,269 +1,340 @@
 <?php
-
 session_start();
 
 include("../includes/connect.php");
-//include("../includes/header.php");
 include("../includes/functions.php");
-?>
-<script src="jquery.js"></script>
-<script>
-    $(document).ready(function (e) {
-        $("#search").keyup(function) {
-            $("#here").show();
-            var x = $(this).val();
-            $.ajax({
-                url:'fetch.php',
-                type:'GET',
-                data:'keyword='+key,
-                success:function (data) {
-                    $("#here").html(data);
-                    $("#here").slideDown('fast');
-                }
-            });
-        });
-    });
-</script>
+$LoggedUserID = $_SESSION["LoggedUserID"];
+$userID = $_SESSION["LoggedUserID"];
+$user = getUsernameFromID($LoggedUserID, $link);
+$FriendUserID = $_SESSION["FriendUserID"];
+$groupID = $_POST['GroupID'];
+$groupName = getCircleNameFromID($groupID, $link);
 
-<html>
-<head>
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-<body>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Group blog </title>
-<link rel='stylesheet' href= 'style.css'/>
-<!-- Bootstrap CSS -->
-    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="css/custom.css">
-<!-- Fonts -->
-    <link rel='stylesheet' type='text/css'
-        href='https://fonts.googleapis.com/css?family=Lato:400,700,900,300'>
-    <link rel='stylesheet' type='text/css'
-        href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'>
-    <link rel='stylesheet' type='text/css'
-        href='https://fonts.googleapis.com/css?family=Raleway:400,300,600,700,900'>
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
-    <link href="css/bootstrap-3.3.7.css" rel="stylesheet" type="text/css">
-<div>
+// Check if they have just joined the group
+if (isset($_POST['join'])) {
+  unset($_POST['join']);
+  insertGroupMembers($groupID, array($LoggedUserID), $link);
+}
 
-  <?php
-  print_r($_SESSION);
-  //get the userID of current logged user
-    $user = $_SESSION["loggedUser"];
-    $getLoggedUserIDSql = "SELECT UserID FROM users WHERE Username ='$user'";
-    $getLoggedUserIDResult = $link->query($getLoggedUserIDSql);
-    while($row = $getLoggedUserIDResult->fetch_assoc()) {
-      $LoggedUserID = $row['UserID'];
-    }
-
-  //get the groupID
-  $groupName = $_SESSION["groupName"];
-  $getGroupIDSql = "SELECT GroupID FROM groups WHERE Name ='$groupName'";
-  $getGroupIDResult = $link->query($getGroupIDSql);
-  while($row = $getGroupIDResult->fetch_assoc()) {
-    $GroupID = $row['GroupID'];
-  }
-
-  //set session for loggedUser and GroupID
-  $_SESSION["GroupID"] = $GroupID;
-  $_SESSION["LoggedUserID"] = $LoggedUserID;
-
-  //Query from group table to see if they are part of the group
-  $groupMemQuery = "SELECT * FROM group_members WHERE UserID ='$LoggedUserID' AND GroupID = '$GroupID'";
-  $isGroupMember = $link->query($groupMemQuery);
-
-  //find the blogID
-  $getBlogIDQuery = "SELECT ID FROM blog_wall WHERE IsGroup = '1' AND OwnerID ='$GroupID'";
-  $getBlogIDResult = $link->query($getBlogIDQuery);
-  while($row = $getBlogIDResult->fetch_assoc()) {
-  //Store blogID into a variable
-  $BlogID = $row['ID'];
-  }
-
-  //Store blogID into session variable
-  $_SESSION["BlogID"] = $BlogID;
-
-  //Check privacy of blog
-  $checkPrivacy = "SELECT Privacy FROM blog_wall WHERE ID = '$BlogID'";
-  $privacyResult = $link->query($checkPrivacy);
-    while($row = $privacyResult->fetch_assoc()) {
-      $privacy = $row['Privacy'];
-    }
-
-  ?>
+// Check if they have just left the group
+if (isset($_POST['leave'])) {
+  unset($_POST['leave']);
+  $leave_group_sql = "DELETE FROM group_members WHERE GroupID = $groupID AND UserID = $LoggedUserID";
+  $link->query($leave_group_sql);
+}
   
-<!-- Search session -->
-<h1>search </h1>
-<form method = "POST" action = "fetch.php">
-  <input id = "search" type="text" name="searchTxt">
-  <input type="submit" value="Submit" name = "submitSearch">
-</form>
-
-<br>
-<br>
-<!-- Blog session -->
-<div class = "column blog">
-
-<br>
-<br>
-
-<!-- https://www.w3schools.com/css/css_form.asp -->
-<form method = "POST" action = "blog.php">
-  Blog:
-  <br>
-  <input id = "blogText" type="text" name="blogInput">
-  <br><br>
-  <input type="submit" value="Submit" name = "submitBlog">
-</form>
-
-<?php
-
-//load the blog wall
-
-if ($privacy == 'Friends') {
-  if(mysqli_num_rows($isGroupMember)>=1){
-    $loadBlog = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult = $link->query($loadBlog);
-    while($row = $loadBlogResult->fetch_assoc()) {
-      echo "Previous Blog: ";
-      echo '<br>';
-      echo "Time : ";
-      echo $row['Time'];
-      echo '<br>';
-      echo $row['text'];
-      echo '<br>';
-    }
-  }
-} elseif ($privacy == 'Public') {
-    $loadBlog1 = "SELECT * FROM posts WHERE BlogID = '$BlogID' ORDER BY Time DESC";
-    $loadBlogResult1 = $link->query($loadBlog1);
-    while($row = $loadBlogResult1->fetch_assoc()) {
-      echo "Previous Blog: ";
-      echo '<br>';
-      echo "Time : ";
-      echo $row['Time'];
-      echo '<br>';
-      echo $row['text'];
-      echo '<br>';
-    }
-  } elseif ($privacy == 'Circles') {
-    echo "circle";
-  } else {
-    echo "Friends of friends";
-  }
-
 ?>
 
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title><?php echo $groupName; ?></title>
 
+    <!-- Bootstrap -->
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/custom.css?v=<? echo time(); ?>" rel="stylesheet" type="text/css">
 
-<!-- Side column to load profile -->
-<div class = "column profile">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    
+    <header>
+      <h1><span>Echo</span>Chamber</h1>
+    </header>
+    
+    <div class="row">
+      
+      <!-- Main display area -->
+      <div class="col-sm-9">
+        
+        <!-- Navbar -->
+        <!-- ref: https://getbootstrap.com/components/ -->
+        <form action="../process/processNav.php" method="post" id="nav-form"></form>
+        <div class="row">
+          <nav class="navbar navbar-default">
+            <div class="container-fluid">
+              <!-- Brand and toggle get grouped for better mobile display -->
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+              </div>
 
-  <br>
+              <!-- Collect the nav links, forms, and other content for toggling -->
+              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <ul class="nav navbar-nav">
+                    <li><a><button type="submit" name="nav" value="profile" class="nav-link" form="nav-form">Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">Photos</button></a></li>
+                  </ul>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li><a><button type="submit" name="nav" value="myFeed" class="nav-link" form="nav-form">My Feed</button></a></li>
+                    <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">My Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="chat" class="nav-link" form="nav-form">Chat</button></a></li>
+                    <li><a><button type="submit" name="nav" value="myAccount" class="nav-link" form="nav-form">My Account</button></a></li>
+                    <li><a><button type="submit" name="nav" value="logout" class="nav-link" form="nav-form">Log Out</button></a></li>
+                  </ul>
+              </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+          </nav>
+        </div>
+        <!-- End navbar -->
+        
 
-  <!-- Welcome message for logged user -->
+        <!-- Content area -->
+        <div class="row">
 
-  Welcome ! <?php echo $user;?>
-  <br>
-  <br>
-  <br>
+          <!-- Main area (posts, photos etc) -->
+          <div class="col-sm-10 col-sm-offset-1" id="main-feed">
+
+            
+            
+            
+            
+
+            <h3><?php echo $groupName; ?></h3>
+
+            <!-- Check Privacy and show join/leave button -->
+            <?php
+            $group_privacy = getGroupPrivacySettings($groupID, $link);
+            $groupMembers = getCircleMemberIDs($groupID, $link);
+            $users_friends = getFriendsArr($LoggedUserID, $link);
+            $users_friends_of_friends = getFriendsOfFriends($LoggedUserID, $link);
+            $friends_in_group = FALSE;
+            foreach ($users_friends as $friend) {
+              if (in_array($friend, $groupMembers)) {
+                $friends_in_group = TRUE;
+                break;
+              }
+            }
+            $fof_in_group = FALSE;
+            foreach ($users_friends_of_friends as $friend) {
+              if (in_array($friend, $groupMembers)) {
+                $fof_in_group = TRUE;
+                break;
+              }
+            }
+            if (in_array($LoggedUserID, $groupMembers)) {
+              // If they're a member, show a leave group button
+              ?>
+            <form method="post">
+              <input type="submit" class="btn btn-default" name="leave" value="Leave Group">
+            </form>
+              <?php
+            } elseif (
+              ($group_privacy == "Friends" && $friends_in_group)
+              || ($group_privacy == "FriendsOfFriends" && $fof_in_group)){
+              // Show a join group button
+              ?>
+            <form method="post">
+              <input type="submit" class="btn btn-default" name="join" value="Join Group">
+            </form>
+              <?php
+            } else {
+              // Tell them they can't join
+              ?>
+            <p>Sorry, you're not allowed to join this group</p>
+              <?php
+            }
+            ?>
+
+           <h4>Members:</h4>
+
 
 <?php
-//Load username
-$loadGroupMem = "SELECT u.Username FROM users u
-INNER JOIN group_members g ON u.UserID = g.UserID
-WHERE g.GroupID = '$GroupID'";
-$loadGroupMemResult = $link->query($loadGroupMem);
 
- ?>
-
-<!-- This shows the user's profile that logged user is looking at -->
-<h3><?php echo $groupName; ?>'s blog </h3>
-	<br>
-    <!-- Display logged group's member-->
-    <p>Member: </p>
-    <?php while($row = $loadGroupMemResult->fetch_assoc()) { ?>
-	<p> </p>
-	<?php echo $row['Username']; ?>
-    <?php
-	} ?>
-  <br>
-  <br>
-  <br>
-  <br>
-
-<?php
-echo "Visible to :  ";
-echo $privacy;
-echo '<br>';
+for ($i = 0 ; $i < sizeof($groupMembers) ; $i++) {
+  // Show each group member
+  $userID = $groupMembers[$i];
+  
+  ?>
+  <div class="feed-item">
+    <form action="../process/processSeeFriend.php" method="post">
+      <input type="hidden" name="friendID" value="<?php echo $userID; ?>">
+      <button type="submit" class="profile-link"><b><?php echo getUsernameFromID($userID, $link); ?></b></button>
+    </form>
+  </div>
+  <?php
+}
 ?>
 
-    <br>
-    <br>
-    <br>
-    <br>
-
-   <!-- Check if the logged user is friend with he/she yet-->
-    <p> Is member? </p>
-
-	<!-- If he/she is part of the group, a leave button will be shown-->
-	<?php if(mysqli_num_rows($isGroupMember)>=1){
-		echo "You are part of the group ^_^"; ?>
-		<br>
-		<br>
-		<form method="POST">
-			<input type="submit" name = "leaveGroup" class ="remove" value ="Leave">
-      <!--Send leave request-->
-			<?php
-			if(isset($_POST['leaveGroup'])) {
-				$leaveQuery = "DELETE FROM group_members WHERE GroupID = '$GroupID' AND UserID = '$LoggedUserID'";
-				if ($link -> query($leaveQuery) === TRUE) {
-				  echo "Leave successfully";
- 				} else {
-					echo "Error: ". $leaveQuery . "<br>" . $link->error;
-        		}
-			}
-	?>
-		</form>
-	<!-- If he/she is not part of the group yet, an add button is displayed-->
-	<?php } else { ?>
-	<?php echo "Wow, you are not part of the group yet!"; ?>
-
-	<form method="POST">
-		<input type="submit" name ="joinGroup" class = "add" value = "Join">
-		<!--Send join request-->
-		<?php
-		if(isset($_POST['joinGroup'])) {
-			$joinQuery = "INSERT INTO group_members (GroupID, UserID) VALUES ('$GroupID', '$LoggedUserID')";
-			if ($link -> query($joinQuery) === TRUE) {
-            echo "Join successfully";
-			} else {
-            	echo "Error: ". $joinQuery . "<br>" . $link->error;
-        	}
-		}
-	   ?>
-	</form>
 
 
-</div>
 
-</div>
-	<?php } //end of if loop ?>
-</body>
-</head>
+        
+      
+        </div><!-- End main feed col -->
+      
+      </div><!-- End main feed row -->
+      </div>
+      
+      <!-- Right sidebar/recommendations area -->
+      <div class="col-sm-3">
+        
+        <!-- Search -->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="container">
+              <form class="navbar-form navbar-center" role="search" action="../process/fetch.php" method="post">
+                <div class="form-group">
+                  <input type="text" id="search" name="searchTxt" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" name="submitSearch" class="btn btn-default">Go</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="row">
+          <!-- If they have Friend Requests, show them -->
+        <?php
+        $currentUserID = $_SESSION["LoggedUserID"];
+        $currentUser = getUsernameFromID($currentUserID, $link);
+
+        //Display list of friend request for current user
+        $sql = "SELECT  * FROM friend_requests WHERE user_to = '$currentUserID'";
+        $result = $link->query($sql);
+        $no_of_friend_requests = mysqli_num_rows($result);
+        if ($no_of_friend_requests > 0) {
+          ?>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Friend Requests</h4>
+            <table style = "width: 100%">
+              <?php
+        }
+
+        
+
+            if (!$result) {
+                echo "failed";
+            } else {
+              while ($row = $result->fetch_assoc()) {
+                    $user_from = $row['user_from'];
+                    $user_to = $row['user_to'];
+                    //Get username for requestFrom
+                    $sql2 = "SELECT Username FROM users WHERE UserID = '$user_from'";
+                    $result2 = $link->query($sql2);
+                        if (!$result2) {
+                        echo "failed";
+                    } else {
+                      while ($row = $result2->fetch_assoc()) {
+                            $userFromUsername = $row['Username'];
+                        }
+                    }
+                    ?>
+                    <tr>
+                    <?php echo '  <td>' . $userFromUsername . '</td>'; ?>
+                    <td><form action="../process/handleFriendRequest.php" method="get">
+                    <button type="submit" class="acceptFriend btn btn-default" name = "accept">Accept
+                    </button>
+                    <?php
+                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
+                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
+                    echo '  <input type="hidden" name="reject" value="no">';
+                    echo '  <input type="hidden" name="accept" value= "yes">';
+                        ?>
+
+                    </form></td>
+
+
+                    <td><form action="../process/handleFriendRequest.php" method="get">
+                    <button type="submit" class="rejectFriend btn btn-default" name = "reject">Reject</button>
+                    <?php
+                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
+                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
+                    echo '  <input type="hidden" name="reject" value="yes">';
+                    echo '  <input type="hidden" name="accept" value= "no">';
+                        ?>
+                   </form></td>
+
+                    </tr>
+               <?php } ?>
+        <?php }
+          
+          if ($no_of_friend_requests > 0) {
+            ?>
+        </table>
+          </div>
+          <?php } ?>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Suggested Friends</h4>
+            <?php 
+            // Get the ranked list of suggestions
+            $suggestedFriends = getFriendRecommendations($LoggedUserID, $link);
+            // Show the top 5
+            $noToShow = min(5, sizeof($suggestedFriends));
+            for ($i = 0 ; $i < $noToShow ; $i++) {
+              $userID = $suggestedFriends[$i];
+              $sql = "
+                  SELECT * FROM users
+                      WHERE UserID = $userID";
+              $result = $link->query($sql);
+              if ($result) {
+                $row = $result->fetch_assoc();
+                ?>
+                <!-- show the friend's name and an add friend button -->
+                <div class="suggestion">
+                  <button class="profile-link"><b><?php echo $row['Username']; ?></b></button>
+                  	<form method="POST">
+                      <input <?php 
+                        if (isset($_POST['add' . $row['UserID']])) { 
+                             ?> type="hidden" <?php 
+                        } else { 
+                             ?> type="submit" <?php 
+                        } ?> name="add<?php echo $row['UserID']; ?>" class="add btn btn-default" value="Add">
+                      <!--Send friend request-->
+                      <?php
+                      if(isset($_POST['add' . $row['UserID']])) {
+                          $friendID = $row['UserID'];
+                          $addFriendQuery = "
+                              INSERT INTO friend_requests 
+                                  (user_from, user_to) 
+                                  VALUES 
+                                  ('$LoggedUserID', '$friendID')";
+                          if ($link->query($addFriendQuery)) {
+                          echo "Request sent successfully";
+
+                          } else {
+                              echo "Error: ". $addFriendQuery . "<br>" . $link->error;
+                          }
+                      }
+                     ?>
+                  </form>
+                </div>
+                <?php
+              }
+            }
+            ?>
+          </div>
+          <div class="col-sm-12 recommendation-section">
+            <h4>Suggested Groups</h4>
+          </div>
+        </div>
+      
+      </div>
+      
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    
+    <!-- control active post -->
+    <script src="../js/commentdisplay.js"></script>
+
+  </body>
 </html>

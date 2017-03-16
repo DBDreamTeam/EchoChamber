@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-
+print_r($_SESSION);
 include('../includes/connect.php');
 include('../includes/functions.php');
 
@@ -80,16 +80,19 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <!-- End navbar -->
         
         <!-- TODO: Add the new post box here -->
- 
-        
-        
         <div class="row">
           <div class="col-sm-2">
-            <img src="<?php echo getProfilePicPath($FriendUserID, $link); ?>" class="profile-pic" alt="<?php echo $CheckFriend; ?>'s profile picture" width="200" height="200">
+            <?php 
+            $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
+            $profile_pic_result = $link->query($profile_pic_sql);
+            if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
+            <img src="<?php echo getProfilePicPath($FriendUserID, $link); ?>" class="profile-pic">
+            <?php } ?>
           </div>
           <div class="col-sm-10" id="new-post">
             
             <h3><?php echo $CheckFriend; ?></h3>
+            
             
             
             <!-- START OF MABEL'S STUFF -->
@@ -119,10 +122,11 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                     WHERE IsGroup = 0 
                     AND OwnerID ='$FriendUserID'";
             $getBlogIDResult = $link->query($getBlogIDQuery);
+            $BlogID = null;
             while($row = $getBlogIDResult->fetch_assoc()) {
               //Store blogID into a variable
               $BlogID = $row['BlogID'];
-              $_SESSION["BlogID"] = $BlogID;
+              $_SESSION['BlogID'] = $BlogID;
             }
 
             //Store blogID into session variable
@@ -146,7 +150,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                             WHERE OwnerID = $LoggedUserID";
                 $result = $link->query($sql);
                 if ($result) {
-                  echo $result->fetch_assoc()['ID'];
+                  echo $result->fetch_assoc()['BlogID'];
                 }
                 ?>">
                 <textarea id = "blogText" name="blogInput" placeholder="Write a new post"></textarea>
@@ -170,19 +174,16 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
           <div class="col-sm-8" id="main-feed">
             
             <?php
-            // Not 100% sure that $_SESSION['ID'] is BlogID, but I think it is
-            // $_SESSION['ID'] doesn't actually seem to be set anywhere any more so it probably isn't
-            // ...but neither is $_SESSION['BlogID'] that I can find...
-            $blogID = getBlogID($FriendUserID, $_SESSION["isGroup"], $link);
-            $blog_privacy = getBlogPrivacySettings($blogID, $link);
+            $blog_id = getBlogID($FriendUserID, 0, $link);
+            $blog_privacy = getBlogPrivacySettings($blog_id, $link);
             
-            if (
-              ($blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link))
+            if ( ($LoggedUserID == $FriendUserID)
+              || ($blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link))
               || ($blog_privacy == "Circles" && inSameCircle($LoggedUserID, $FriendUserID, $link))
               || ($blog_privacy == "FriendsOfFriends" && isFriendOfFriend($LoggedUserID, $FriendUserID, $link))
-              || $blog_privacy == "Public"
-            ) {
-            
+              || ($blog_privacy == "Public")
+              ) {
+              
               $users_posts_sql = "
                 SELECT PostID FROM posts
                     JOIN blog_wall
@@ -356,34 +357,37 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                 ?>
                 <!-- show the friend's name and an add friend button -->
                 <div class="suggestion">
-                  <button class="profile-link"><b><?php echo $row['Username']; ?></b></button>
-                  	<form method="POST">
-                      <input <?php 
-                        if (isset($_POST['add' . $row['UserID']])) { 
-                             ?> type="hidden" <?php 
-                        } else { 
-                             ?> type="submit" <?php 
-                        } ?> name="add<?php echo $row['UserID']; ?>" class="add btn btn-default" value="Add">
-                      <!--Send friend request-->
-                      <?php
-                      if(isset($_POST['add' . $row['UserID']])) {
-                          $friendID = $row['UserID'];
-                          $addFriendQuery = "
-                              INSERT INTO friend_requests 
-                                  (user_from, user_to) 
-                                  VALUES 
-                                  ('$LoggedUserID', '$friendID')";
-                          if ($link->query($addFriendQuery)) {
-                          echo "Request sent successfully";
-
-                          } else {
-                              echo "Error: ". $addFriendQuery . "<br>" . $link->error;
-                          }
-                      }
-                     ?>
+                  <form action="../process/processSeeFriend.php" method="post">
+                    <input type="hidden" name="friendID" value="<?php echo $row['UserID']; ?>">
+                    <button type="submit" class="profile-link"><b><?php echo $row['Username']; ?></b></button>
                   </form>
-                </div>
-                <?php
+                  <form method="POST">
+                    <input <?php 
+                      if (isset($_POST['add' . $row['UserID']])) { 
+                           ?> type="hidden" <?php 
+                      } else { 
+                           ?> type="submit" <?php 
+                      } ?> name="add<?php echo $row['UserID']; ?>" class="add btn btn-default" value="Add">
+                    <!--Send friend request-->
+                    <?php
+                    if(isset($_POST['add' . $row['UserID']])) {
+                        $friendID = $row['UserID'];
+                        $addFriendQuery = "
+                            INSERT INTO friend_requests 
+                                (user_from, user_to) 
+                                VALUES 
+                                ('$LoggedUserID', '$friendID')";
+                        if ($link->query($addFriendQuery)) {
+                        echo "Request sent successfully";
+
+                        } else {
+                            echo "Error: ". $addFriendQuery . "<br>" . $link->error;
+                        }
+                    }
+                   ?>
+                </form>
+              </div>
+              <?php
               }
             }
             ?>
