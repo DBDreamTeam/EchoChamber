@@ -82,13 +82,10 @@ html, body {
   border-bottom-left-radius: 10px;
 }
 
-.album-thumbnail {
-  border-style: inset;
-  border-top-color: #f08139;
-  border-left-color: #f08139;
-  border-right-color: #1c2477;
-  border-bottom-color: #1c2477;
-  border-width: 3px;
+.feed-photo {
+  padding: 10px;
+  max-height: 300px;
+  max-width: 300px;
 }
 
 #comments {
@@ -132,4 +129,14 @@ label {
 
 .suggestion {
   padding: 10px;
+}
+
+.profile-pic {
+  max-height: 150px;
+  max-width: 150px;
+  padding: 10px;
+}
+
+select {
+  margin: 5px;
 }
