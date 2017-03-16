@@ -25,7 +25,7 @@ $chatID = $_SESSION["chatID"];
     <!-- Bootstrap -->
     <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="../css/custom.css?v=<? echo time(); ?>" rel="stylesheet" type="text/css">
+    <link href="../css/custom.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -51,25 +51,13 @@ $chatID = $_SESSION["chatID"];
         <div class="row">
           <nav class="navbar navbar-default">
             <div class="container-fluid">
-              <!-- Brand and toggle get grouped for better mobile display -->
-              <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-              </div>
 
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                  <ul class="nav navbar-nav">
-                    <li><a><button type="submit" name="nav" value="profile" class="nav-link" form="nav-form">Profile</button></a></li>
-                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">Photos</button></a></li>
-                  </ul>
                   <ul class="nav navbar-nav navbar-right">
                     <li><a><button type="submit" name="nav" value="myFeed" class="nav-link" form="nav-form">My Feed</button></a></li>
                     <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">My Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">My Photos</button></a></li>
                     <li><a><button type="submit" name="nav" value="chat" class="nav-link" form="nav-form">Chat</button></a></li>
                     <li><a><button type="submit" name="nav" value="myAccount" class="nav-link" form="nav-form">My Account</button></a></li>
                     <li><a><button type="submit" name="nav" value="logout" class="nav-link" form="nav-form">Log Out</button></a></li>
@@ -260,6 +248,18 @@ $msgArray = retrieveMessages($chatID, $link);
           </div>
           <div class="col-sm-12 recommendation-section">
             <h4>Suggested Groups</h4>
+            <?php
+            $suggested_groups = getGroupRecommendations($LoggedUserID, $link);
+            foreach ($suggested_groups as $group_id) {
+              $group_name = getCircleNameFromID($group_id, $link);
+              ?>
+            <form action="../public/groupBlog.php" method="post">
+              <input type="hidden" name="GroupID" value="<?php echo $group_id; ?>">
+              <button type="submit" class="profile-link"><b><?php echo $group_name; ?></b></button>
+            </form>
+              <?php
+            }
+            ?>
           </div>
         </div>
       

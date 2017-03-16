@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-print_r($_SESSION);
+
 include('../includes/connect.php');
 include('../includes/functions.php');
 
@@ -24,7 +24,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
     <!-- Bootstrap -->
     <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="../css/custom.css?v=<? echo time(); ?>" rel="stylesheet" type="text/css">
+    <link href="../css/custom.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -50,25 +50,13 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <div class="row">
           <nav class="navbar navbar-default">
             <div class="container-fluid">
-              <!-- Brand and toggle get grouped for better mobile display -->
-              <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-              </div>
 
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                  <ul class="nav navbar-nav">
-                    <li><a><button type="submit" name="nav" value="profile" class="nav-link" form="nav-form">Profile</button></a></li>
-                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">Photos</button></a></li>
-                  </ul>
                   <ul class="nav navbar-nav navbar-right">
                     <li><a><button type="submit" name="nav" value="myFeed" class="nav-link" form="nav-form">My Feed</button></a></li>
                     <li><a><button type="submit" name="nav" value="myProfile" class="nav-link" form="nav-form">My Profile</button></a></li>
+                    <li><a><button type="submit" name="nav" value="photos" class="nav-link" form="nav-form">My Photos</button></a></li>
                     <li><a><button type="submit" name="nav" value="chat" class="nav-link" form="nav-form">Chat</button></a></li>
                     <li><a><button type="submit" name="nav" value="myAccount" class="nav-link" form="nav-form">My Account</button></a></li>
                     <li><a><button type="submit" name="nav" value="logout" class="nav-link" form="nav-form">Log Out</button></a></li>
@@ -80,20 +68,14 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <!-- End navbar -->
         
         <!-- TODO: Add the new post box here -->
-    
-        
         <div class="row">
           <div class="col-sm-2">
-            <?php 
-            /*$profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
-            $profile_pic_result = $link->query($profile_pic_sql);*/
-            //if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
             <img src="<?php echo getProfilePicPath($FriendUserID, $link); ?>" class="profile-pic">
-            <?php //} ?>
           </div>
           <div class="col-sm-10" id="new-post">
             
             <h3><?php echo $CheckFriend; ?></h3>
+            <h4><a href="photos.php">See Photos</a></h4>
             
             
             
@@ -207,30 +189,6 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             
             ?>
             
-            <div class="feed-item" id="1">
-              <h5>Zak Walters</h5>
-              <p>I'm so excited about doing this databases project</p>
-            </div>
-            <div class="feed-item" id="2">
-              <h5>Mabel Chan</h5>
-              <p>OMG I hate emojis, they're so lame and tacky</p>
-            </div>
-            <div class="feed-item feed-photo" id="3">
-              <h5>Mairi Ng</h5>
-              <img src="img/ECLogo1.png" alt="EC Logo">
-              <p>Our logo is so cool!!!!!!!!</p>
-            </div>
-            <div class="feed-item feed-album" id="4">
-              <h5>Marisa Enhuber</h5>
-              <!-- These need to be scaled down... -->
-              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
-              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
-              <img src="img/ECLogo1.png" alt="EC Logo" class="album-thumbnail" height="70px">
-              <h6>Just loads of our logo!</h6>
-              <p>This is the only image I have in the local folder so I
-              had to use it as every image in the album.</p>
-            </div>
-          </div>
           
           <!-- Side area (further info, comments, etc) -->
           <div class="col-sm-4" id="comments" hidden="hidden">
@@ -250,6 +208,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
           
         </div>
       
+      </div>
       </div>
       
       <!-- Right sidebar/recommendations area -->
@@ -275,127 +234,36 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <?php
         $currentUserID = $_SESSION["LoggedUserID"];
         $currentUser = getUsernameFromID($currentUserID, $link);
-
-        //Display list of friend request for current user
-        $sql = "SELECT  * FROM friend_requests WHERE user_to = '$currentUserID'";
-        $result = $link->query($sql);
-        $no_of_friend_requests = mysqli_num_rows($result);
-        if ($no_of_friend_requests > 0) {
           ?>
+
           <div class="col-sm-12 recommendation-section">
-            <h4>Friend Requests</h4>
-            <table style = "width: 100%">
-              <?php
-        }
-
-        
-
-            if (!$result) {
-                echo "failed";
-            } else {
-              while ($row = $result->fetch_assoc()) {
-                    $user_from = $row['user_from'];
-                    $user_to = $row['user_to'];
-                    //Get username for requestFrom
-                    $sql2 = "SELECT Username FROM users WHERE UserID = '$user_from'";
-                    $result2 = $link->query($sql2);
-                        if (!$result2) {
-                        echo "failed";
-                    } else {
-                      while ($row = $result2->fetch_assoc()) {
-                            $userFromUsername = $row['Username'];
-                        }
-                    }
-                    ?>
-                    <tr>
-                    <?php echo '  <td>' . $userFromUsername . '</td>'; ?>
-                    <td><form action="../process/handleFriendRequest.php" method="get">
-                    <button type="submit" class="acceptFriend btn btn-default" name = "accept">Accept
-                    </button>
-                    <?php
-                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
-                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
-                    echo '  <input type="hidden" name="reject" value="no">';
-                    echo '  <input type="hidden" name="accept" value= "yes">';
-                        ?>
-
-                    </form></td>
-
-
-                    <td><form action="../process/handleFriendRequest.php" method="get">
-                    <button type="submit" class="rejectFriend btn btn-default" name = "reject">Reject</button>
-                    <?php
-                    echo '  <input type="hidden" name="user_from" value="' . $user_from . '">';
-                    echo '  <input type="hidden" name="user_to" value="' . $user_to . '">';
-                    echo '  <input type="hidden" name="reject" value="yes">';
-                    echo '  <input type="hidden" name="accept" value= "no">';
-                        ?>
-                   </form></td>
-
-                    </tr>
-               <?php } ?>
-        <?php }
-          
-          if ($no_of_friend_requests > 0) {
-            ?>
-        </table>
-          </div>
-          <?php } ?>
-          <div class="col-sm-12 recommendation-section">
-            <h4>Suggested Friends</h4>
-            <?php 
-            // Get the ranked list of suggestions
-            $suggestedFriends = getFriendRecommendations($LoggedUserID, $link);
-            // Show the top 5
-            $noToShow = min(5, sizeof($suggestedFriends));
-            for ($i = 0 ; $i < $noToShow ; $i++) {
-              $userID = $suggestedFriends[$i];
-              $sql = "
-                  SELECT * FROM users
-                      WHERE UserID = $userID";
-              $result = $link->query($sql);
-              if ($result) {
-                $row = $result->fetch_assoc();
-                ?>
-                <!-- show the friend's name and an add friend button -->
-                <div class="suggestion">
-                  <form action="../process/processSeeFriend.php" method="post">
-                    <input type="hidden" name="friendID" value="<?php echo $row['UserID']; ?>">
-                    <button type="submit" class="profile-link"><b><?php echo $row['Username']; ?></b></button>
-                  </form>
-                  <form method="POST">
-                    <input <?php 
-                      if (isset($_POST['add' . $row['UserID']])) { 
-                           ?> type="hidden" <?php 
-                      } else { 
-                           ?> type="submit" <?php 
-                      } ?> name="add<?php echo $row['UserID']; ?>" class="add btn btn-default" value="Add">
-                    <!--Send friend request-->
-                    <?php
-                    if(isset($_POST['add' . $row['UserID']])) {
-                        $friendID = $row['UserID'];
-                        $addFriendQuery = "
-                            INSERT INTO friend_requests 
-                                (user_from, user_to) 
-                                VALUES 
-                                ('$LoggedUserID', '$friendID')";
-                        if ($link->query($addFriendQuery)) {
-                        echo "Request sent successfully";
-
-                        } else {
-                            echo "Error: ". $addFriendQuery . "<br>" . $link->error;
-                        }
-                    }
-                   ?>
+            <h4><?php echo $CheckFriend; ?>'s Friends</h4>
+            <?php
+            $friends = getFriendsArr($FriendUserID, $link);
+            foreach ($friends as $friend) {
+              ?>
+                <form action="../process/processSeeFriend.php" method="post">
+                  <input type="hidden" name="friendID" value="<?php echo $friend; ?>">
+                  <button type="submit" class="profile-link"><b><?php echo getUsernameFromID($friend, $link); ?></b></button>
                 </form>
-              </div>
               <?php
-              }
             }
             ?>
           </div>
+          
           <div class="col-sm-12 recommendation-section">
-            <h4>Suggested Groups</h4>
+            <h4><?php echo $CheckFriend; ?>'s Groups</h4>
+            <?php
+            $circles = getUserCircleIDs($FriendUserID, $link);
+            foreach ($circles as $circle) {
+              ?>
+                <form action="../process/processSeeFriend.php" method="post">
+                  <input type="hidden" name="GroupID" value="<?php echo $group; ?>">
+                  <button type="submit" class="profile-link"><b><?php echo getCircleNameFromID($circle, $link); ?></b></button>
+                </form>
+              <?php
+            }
+            ?>
           </div>
         </div>
       
