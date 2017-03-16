@@ -31,7 +31,7 @@ CREATE TABLE `groups`(
     `GroupID`   int(10) AUTO_INCREMENT NOT NULL,
     `Name`      varchar(100) NOT NULL,
     `PictureID` int(10),
-    `Privacy` enum('Friends','Circles','FriendsOfFriends') NOT NULL
+    `Privacy` enum('Friends','Circles','FriendsOfFriends') NOT NULL,
     PRIMARY KEY (`GroupID`), /*Privacy removed */
     CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
     REFERENCES pictures(`PictureID`)
