@@ -13,6 +13,8 @@ CREATE TABLE `friendships` (
     `UserOne`   int(10) NOT NULL,
     `UserTwo`   int(10) NOT NULL,
     PRIMARY KEY (`UserOne`, `UserTwo`)
+    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
+    REFERENCES users(`UserID`)
 );
 
 CREATE TABLE `pictures`(
