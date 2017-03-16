@@ -42,7 +42,7 @@ CREATE TABLE `group_members`(
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`GroupID`, `UserID`)
     CONSTRAINT fk_GroupID FOREIGN KEY (`GroupID`) 
-    REFERENCES groups(`GroupID`)
+    REFERENCES groups(`GroupID`),
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
     REFERENCES users(`UserID`)
 );
@@ -64,7 +64,7 @@ CREATE TABLE `posts`(
     `PictureID`   int(10),
     PRIMARY KEY (`PostID`)
     CONSTRAINT fk_PictureID FOREIGN KEY (`PictureID`) 
-    REFERENCES pictures(`PictureID`)
+    REFERENCES pictures(`PictureID`),
     CONSTRAINT fk_BlogID FOREIGN KEY (`BlogID`) 
     REFERENCES blog_wall(`BlogID`)
 );
@@ -89,7 +89,7 @@ CREATE TABLE `comments`(
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`CommentID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
-    REFERENCES users(`UserID`)
+    REFERENCES users(`UserID`),
     CONSTRAINT fk_PostID FOREIGN KEY (`PostID`) 
     REFERENCES posts(`PostID`)
 );
@@ -101,7 +101,7 @@ CREATE TABLE `sentiments`(
     `Sentiment` enum('positive','neutral','negative') NOT NULL DEFAULT 'neutral',
     PRIMARY KEY (`UserID`, `EntityID`)
     CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
-    REFERENCES users(`UserID`) 
+    REFERENCES users(`UserID`), 
    CONSTRAINT fk_EntityID FOREIGN KEY (`EntityID`) 
     REFERENCES entity(`EntityID`) 
 );
@@ -123,7 +123,7 @@ CREATE TABLE `message`(
     `DateTime`  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, /* added DEFAULT CURRENT_TIMESTAMP and removed length */
     PRIMARY KEY (`MessageID`)
    CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
-    REFERENCES users(`UserID`) 
+    REFERENCES users(`UserID`),
     CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
     REFERENCES users(`ChatID`) 
 );
@@ -140,7 +140,7 @@ CREATE TABLE `chat_members` (
     `UserID`    int(10) NOT NULL,
     PRIMARY KEY (`ChatID`, `UserID`)
   CONSTRAINT fk_ChatID FOREIGN KEY (`ChatID`) 
-  REFERENCES chat(`ChatID`) 
+  REFERENCES chat(`ChatID`), 
   CONSTRAINT fk_UserID FOREIGN KEY (`UserID`) 
   REFERENCES users(`UserID`) 
 );
