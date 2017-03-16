@@ -80,14 +80,16 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
         <!-- End navbar -->
         
         <!-- TODO: Add the new post box here -->
+    
+        
         <div class="row">
           <div class="col-sm-2">
             <?php 
-            $profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
-            $profile_pic_result = $link->query($profile_pic_sql);
-            if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
+            /*$profile_pic_sql = "SELECT PictureID FROM users WHERE UserID = $LoggedUserID";
+            $profile_pic_result = $link->query($profile_pic_sql);*/
+            //if ($pic_id = $profile_pic_result->fetch_assoc()['PictureID']) { ?>
             <img src="<?php echo getProfilePicPath($FriendUserID, $link); ?>" class="profile-pic">
-            <?php } ?>
+            <?php //} ?>
           </div>
           <div class="col-sm-10" id="new-post">
             
