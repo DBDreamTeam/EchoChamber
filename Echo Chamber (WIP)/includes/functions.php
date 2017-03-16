@@ -398,7 +398,7 @@ function getPublicCircles($conn) {
 }
 
 function printComments($picID, $conn) {
-    $selectComments = "SELECT comments.Time, comments.Text, users.Username FROM comments, users WHERE comments.UserID = users.UserID AND comments.PostID = {$picID}";
+    $selectComments = "SELECT comments.Time, comments.Text, users.Username FROM comments, users WHERE comments.UserID = users.UserID AND comments.PostID = {$picID} AND comments.isPictures = 1";
     
     $commentsResult = mysqli_query($conn, $selectComments);
     
@@ -796,8 +796,8 @@ function displayAllAccessiblePhotos($loggedUser, $pageOwner, $conn) {
     }
 }
 
-function insertComment($userID, $commentText, $postID, $conn) {
-    $insertComment = "INSERT INTO comments (Text, UserID, PostID) VALUES ('{$commentText}', {$userID}, {$postID})";
+function insertComment($userID, $commentText, $postID, $isPictures, $conn) {
+    $insertComment = "INSERT INTO comments (Text, UserID, PostID, isPictures) VALUES ('{$commentText}', {$userID}, {$postID}, {$isPictures})";
 
     if ($conn -> query($insertComment) === TRUE) {
         echo "Inserted comment text and userID into comments table successfully";
