@@ -1,21 +1,11 @@
 <?php 
 include '../includes/phptop.php';
-include '../includes/functions.php';?>
+include '../includes/functions.php';
 
-<?php 
-// In practice, to be set at login
-//$_SESSION["userID"] = 105;
-?>
-
-<?php
 $userID = $_SESSION["LoggedUserID"];
-?>
 
-<?php
 header('Location: ../public/chatWindow.php');
-?>
 
-<?php 
 // Get variables
 $chatName = $_POST["chatName"];
 $chatFriends = $_POST["friend"];

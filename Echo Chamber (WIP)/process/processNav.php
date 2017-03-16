@@ -28,7 +28,7 @@ if($location == "profile") {
 } elseif($location == "myAccount"){
     header('Location: ../public/manageAccount.php');
 } elseif($location == "logout"){
-    header('Location: ../public/index.php');
+    header('Location: ../process/logout.php');
 }
 
 

@@ -10,9 +10,7 @@ session_start();
 
   // username and password sent from form ("posted by form")
 $email = $_POST['email'];
-echo $email;
 $mypassword = $_POST['password'];
-echo $mypassword;
  /* 
  Using prepared statements to separate out username & password checking
  avoids sql injections
@@ -35,15 +33,14 @@ $stmt->bind_param("s", $email);
 
 // bool check
 if ($stmt->execute()) {
-    echo "Query to user table successfully performed <br>";
     // need to get a return statement to use in password check below
     $result = $stmt->get_result();
 
     //checks if the user exists (if the user email exists in the user table)
     if (mysqli_num_rows($result) <=0) {
         $_SESSION['errorMsg'] = "Wrong Email. Please try again. <br>";
-            echo $_SESSION['errorMsg'];
-            echo "User does not exist in table <br>";
+            //echo $_SESSION['errorMsg'];
+            //echo "User does not exist in table <br>";
             header("Location: ../public/index.php");
     // if the user does exist in table, check password
     } else {
@@ -52,7 +49,7 @@ if ($stmt->execute()) {
             // add constant time string constraint to avoid password trial hacking 
             $row = mysqli_fetch_assoc($result);
 
-            echo $row["Password"];
+            //echo $row["Password"];
         // Gets hash from database, hashes user input and compares the hashes  
         // http://php.net/manual/de/function.password-verify.php
         // online hash generator: http://www.passwordtool.hu/php5-password-hash-generator -> Marisa
@@ -65,19 +62,23 @@ if ($stmt->execute()) {
            $_SESSION['LoggedUserID'] = $row['UserID'];
            $_SESSION['FriendUserID'] = $row['UserID'];
            $_SESSION['albumID'] = "allPhotos";
+           if (isset($_SESSION['errorMag'])) {
+             unset($_SESSION['errorMag']);
+           }
             //redirect
             header("Location: ../public/landing.php");
         }else { 
             // don't redirect but display same page with error
            // header("Location: ../public/index.php");
             $_SESSION['errorMsg'] = "Wrong Password. Please try again. <br>";
-            echo $_SESSION['errorMsg'];
+            //echo $_SESSION['errorMsg'];
             header("Location: ../public/index.php");
         }
     }
 } else {
     // if query fails
-    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+    //echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+    $_SESSION['errorMsg'] = "Sorry, something went wrong, please try again.";
 }
 
 

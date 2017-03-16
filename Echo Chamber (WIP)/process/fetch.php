@@ -126,12 +126,12 @@ if (!empty($_POST['searchTxt'])) {
     $blogID = $textOutput['BlogID'];
 
     //Check if the blog belongs to group blog or individual blog
-    $isGroupQuery = "SELECT IsGroup FROM blog_wall WHERE ID = '$blogID' ";
+    $isGroupQuery = "SELECT IsGroup FROM blog_wall WHERE BlogID = '$blogID' ";
     $isGroupresult = mysqli_query($link, $isGroupQuery);
     $isGroup = $isGroupresult->fetch_assoc()['IsGroup'];
 
     //Find the matching OwnerID from blog_wall
-    $OwnerIDquery = "SELECT OwnerID FROM blog_wall WHERE ID = '$blogID' ";
+    $OwnerIDquery = "SELECT OwnerID FROM blog_wall WHERE BlogID = '$blogID' ";
     $OwnerIDresult = mysqli_query($link, $OwnerIDquery);
     while($row = $OwnerIDresult->fetch_assoc()) {
       $OwnerID = $row['OwnerID'];
@@ -168,7 +168,7 @@ if (!empty($_POST['searchTxt'])) {
         ?>
 
         <form action="../public/groupBlog.php" method="post">
-          <input type="hidden" name="friendID" value="<?php echo $output['GroupID']; ?>">
+          <input type="hidden" name="GroupID" value="<?php echo $output['GroupID']; ?>">
           <button type="submit" class="profile-link"><b><?php echo $groupName; ?></b></button>
         </form>
         </div>
@@ -188,7 +188,7 @@ if (!empty($_POST['searchTxt'])) {
     ?>
 
     <form action="../public/groupBlog.php" method="post">
-      <input type="hidden" name="friendID" value="<?php echo $output['GroupID']; ?>">
+      <input type="hidden" name="GroupID" value="<?php echo $output['GroupID']; ?>">
       <button type="submit" class="profile-link"><b><?php echo $groupName; ?></b></button>
     </form>
     </div>
