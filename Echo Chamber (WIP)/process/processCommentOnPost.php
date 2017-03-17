@@ -12,6 +12,6 @@ $userID = $_SESSION["LoggedUserID"];
 $postID = $_POST["postID"];
 //$isPhoto = 0;
 
-insertComment($userID, $commentText, $postID, 0, $link);
+insertComment($userID, $commentText, $postID, $link);
 
 ?>
