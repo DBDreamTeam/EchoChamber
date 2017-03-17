@@ -1,10 +1,7 @@
 <?php 
 include '../includes/phptop.php';
 include '../includes/functions.php';
-?>
 
-
-<?php
 header('Location: ../public/manageCircles.php');
 ?>
 
@@ -43,8 +40,6 @@ $imageID = insertImageNew($albumID, "uploadedimage", $link);
 // Inserts all group information into the groups table
 $groupID = insertGroup($circleName, $imageID, $circlePrivacy, $link);
 
-// Creates blog for the circle
-$blogID = createBlog(true, $circlePrivacy, $groupID, $link);
 
 
 

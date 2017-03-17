@@ -13,10 +13,10 @@ echo $blogInput;
 //get the BlogID of current profile
 $FriendUserID = $_SESSION["FriendUserID"];
 $LoggedUserID = $_SESSION["LoggedUserID"];
-$BlogID = $_SESSION["BlogID"];
+$BlogID = getBlogID($FriendUserID, 0, $link);
 $isGroup = 0;
 
-$picID = null;
+$picID = "NULL";
 
 // if an image has been uploaded
 if(!empty($_FILES["uploadedimage"]["name"])){
@@ -27,15 +27,17 @@ if(!empty($_FILES["uploadedimage"]["name"])){
         // if a "Blog Pictures" album does exist, get the albumID and add the new blog picture to it
         $albumID = getAlbumIDFromName('Blog Pictures', $LoggedUserID, $link);
         $picID = insertImageNew($albumID, "uploadedimage", $link);
-        echo "Album exist <br>";
+        echo "Album exist <br> $picID";
     } else {
         // if the album does not already exist, create it and add the picture to it
         $albumID = insertAlbum('Blog Pictures', $LoggedUserID, 'Friends', $link);
         $picID = insertImageNew($albumID, "uploadedImage", $link);
+      echo "Album does not exist $picID";
+      
     }
 }
 
-$insertBlog = "INSERT INTO posts (BlogID, text, PictureID) VALUES ('$BlogID','$blogInput', $picID)";
+$insertBlog = "INSERT INTO posts (BlogID, text, PictureID) VALUES ($BlogID,'$blogInput', $picID)";
 if ($link -> query($insertBlog) === TRUE) {
 } else {
   echo "Error: ". $insertBlog . "<br>" . $link->error;
@@ -48,8 +50,7 @@ $text_from_posts_sql = "
     SELECT text FROM posts
         JOIN blog_wall
         ON posts.BlogID = blog_wall.BlogID
-        WHERE blog_wall.IsGroup = 0
-        AND blog_wall.OwnerID = $LoggedUserID";
+        WHERE blog_wall.OwnerID = $LoggedUserID";
 $text_from_posts_result = $link->query($text_from_posts_sql);
 $text_from_posts_array = array();
 while ($row = $text_from_posts_result->fetch_assoc()) {

@@ -26,7 +26,7 @@ $birthday = $year . "-" . $month . "-" . $day;*/
 // Insert user info into users
 $userID = createUser($username, $hash, $email, $birthday, null, $link);
 // Creates a blog for the new user
-$blogID = createBlog(false, 'Friends', $userID, $link);
+$blogID = createBlog('Friends', $userID, $link);
 
 // If an image has been uploaded, does the following:
 
