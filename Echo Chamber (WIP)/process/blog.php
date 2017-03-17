@@ -31,7 +31,7 @@ if(!empty($_FILES["uploadedimage"]["name"])){
     } else {
         // if the album does not already exist, create it and add the picture to it
         $albumID = insertAlbum('Blog Pictures', $LoggedUserID, 'Friends', $link);
-        $picID = insertImageNew($albumID, "uploadedImage", $link);
+        $picID = insertImageNew($albumID, "uploadedimage", $link);
       echo "Album does not exist $picID";
       
     }
