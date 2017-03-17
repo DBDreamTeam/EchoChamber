@@ -191,6 +191,7 @@ if (!empty($_POST['searchTxt'])) {
       
       </div><!-- End main feed row -->
       
+    </div>
       <!-- Right sidebar/recommendations area -->
       <div class="col-sm-3">
         
@@ -352,7 +353,7 @@ if (!empty($_POST['searchTxt'])) {
       
       </div>
       
-    </div>
+    
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
