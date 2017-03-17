@@ -86,15 +86,15 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
 <!-- Form for creating new circle -->
 <form action = "../process/processCircleCreate.php" method = "post" enctype="multipart/form-data">
 
-<h3>Select Friends for your Circle...</h3>
+<p>Select Friends for your Circle...</p>
 
     <?php getFriends($userID, $link); // Lists all user's friends ?>
     <input type="hidden" name="circleMember[]" value ="<?php echo $userID;?>">
 
-<h3> Give your circle a name...</h3>
+<p> Give your circle a name...</p>
     <input type = "text" name="circleName" placeholder = "Name your circle">
 
-<h3> Who has access to your circle?</h3>
+<p> Who has access to your circle?</p>
     
     <select name ="privacy">
     <option value = "friends">Friends</option>
@@ -102,7 +102,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
     <option value = "friendsOfFriends">Friends of Friends</option>
     </select><br>
     
-<h3> Upload a nice pic for your circle to marvel at :) </h3>
+<p> Upload a nice pic for your circle to marvel at :) </p>
     
     <input type="file" name = "uploadedimage"><br><br>
     

@@ -118,6 +118,7 @@ if (isset($_POST['leave'])) {
               // If they're a member, show a leave group button
               ?>
             <form method="post">
+              <input type="hidden" value="<?php echo $groupID; ?>" name="GroupID">
               <input type="submit" class="btn btn-default" name="leave" value="Leave Group">
             </form>
               <?php
@@ -127,6 +128,7 @@ if (isset($_POST['leave'])) {
               // Show a join group button
               ?>
             <form method="post">
+              <input type="hidden" value="<?php echo $groupID; ?>" name="GroupID">
               <input type="submit" class="btn btn-default" name="join" value="Join Group">
             </form>
               <?php

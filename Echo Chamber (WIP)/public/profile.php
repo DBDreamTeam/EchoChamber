@@ -254,8 +254,8 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             $circles = getUserCircleIDs($FriendUserID, $link);
             foreach ($circles as $circle) {
               ?>
-                <form action="../process/processSeeFriend.php" method="post">
-                  <input type="hidden" name="GroupID" value="<?php echo $group; ?>">
+                <form action="../public/groupBlog.php" method="post">
+                  <input type="hidden" name="GroupID" value="<?php echo $circle; ?>">
                   <button type="submit" class="profile-link"><b><?php echo getCircleNameFromID($circle, $link); ?></b></button>
                 </form>
               <?php
