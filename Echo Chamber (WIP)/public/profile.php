@@ -103,8 +103,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             //find the blogID
             $getBlogIDQuery = "
                 SELECT BlogID FROM blog_wall 
-                    WHERE IsGroup = 0 
-                    AND OwnerID ='$FriendUserID'";
+                    WHERE OwnerID ='$FriendUserID'";
             $getBlogIDResult = $link->query($getBlogIDQuery);
             $BlogID = null;
             while($row = $getBlogIDResult->fetch_assoc()) {
@@ -160,10 +159,10 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             <?php
             $blog_id = getBlogID($FriendUserID, 0, $link);
             $blog_privacy = getBlogPrivacySettings($blog_id, $link);
-            
             if ( ($LoggedUserID == $FriendUserID)
               || ($blog_privacy == "Friends" && isFriends($LoggedUserID, $FriendUserID, $link))
               || ($blog_privacy == "Circles" && inSameCircle($LoggedUserID, $FriendUserID, $link))
+              || ($blog_privacy == "Circles" && isFriends($LoggedUserID, $FriendUserID, $link))
               || ($blog_privacy == "FriendsOfFriends" && isFriendOfFriend($LoggedUserID, $FriendUserID, $link))
               || ($blog_privacy == "Public")
               ) {
@@ -172,8 +171,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
                 SELECT PostID FROM posts
                     JOIN blog_wall
                     ON posts.BlogID = blog_wall.BlogID
-                    WHERE blog_wall.OwnerID = $FriendUserID
-                    AND blog_wall.IsGroup = 0";
+                    WHERE blog_wall.OwnerID = $FriendUserID";
               $users_posts_result = $link->query($users_posts_sql);
               while ($row = $users_posts_result->fetch_assoc()) {
                 $postID = $row['PostID'];
@@ -189,7 +187,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             
             ?>
             
-          
+          </div>
           <!-- Side area (further info, comments, etc) -->
           <div class="col-sm-4" id="comments" hidden="hidden">
             
@@ -208,7 +206,6 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
           
         </div>
       
-      </div>
       </div>
       
       <!-- Right sidebar/recommendations area -->

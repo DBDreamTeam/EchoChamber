@@ -146,9 +146,13 @@ for($i=0; $i<count($userChats); $i++) {
 }
 ?>
 
-<input type="submit" class="btn btn-default" value = "Continue Chat">
+<input type="submit" class="btn btn-default" id="continueChat" disabled="disabled" value = "Continue Chat">
 </form>
-
+<script>
+$("input:radio").change(function () {
+  $("#continueChat").prop("disabled", false);
+});
+</script>
 
 
 

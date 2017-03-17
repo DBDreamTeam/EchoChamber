@@ -167,7 +167,6 @@ for ($i = 0 ; $i < sizeof($groupMembers) ; $i++) {
       
       </div><!-- End main feed row -->
       </div>
-      
       <!-- Right sidebar/recommendations area -->
       <div class="col-sm-3">
         
@@ -184,6 +183,7 @@ for ($i = 0 ; $i < sizeof($groupMembers) ; $i++) {
             </div>
           </div>
         </div>
+      </div>
         
         <!-- Recommendations -->
         <div class="row">
@@ -325,8 +325,6 @@ for ($i = 0 ; $i < sizeof($groupMembers) ; $i++) {
         </div>
       
       </div>
-      
-    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

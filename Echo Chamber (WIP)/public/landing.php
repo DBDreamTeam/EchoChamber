@@ -107,8 +107,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             //find the blogID
             $getBlogIDQuery = "
                 SELECT BlogID FROM blog_wall 
-                    WHERE IsGroup = 0 
-                    AND OwnerID ='$FriendUserID'";
+                    WHERE OwnerID ='$FriendUserID'";
             $getBlogIDResult = $link->query($getBlogIDQuery);
             $BlogID = null;
             while($row = $getBlogIDResult->fetch_assoc()) {
@@ -299,6 +298,7 @@ $CheckFriend = getUsernameFromID($FriendUserID, $link);
             <?php 
             // Get the ranked list of suggestions
             $suggestedFriends = getFriendRecommendations($LoggedUserID, $link);
+            
             // Show the top 5
             $noToShow = min(5, sizeof($suggestedFriends));
             for ($i = 0 ; $i < $noToShow ; $i++) {
