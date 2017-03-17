@@ -398,7 +398,7 @@ function getPublicCircles($conn) {
 }
 
 function printComments($picID, $conn) {
-    $selectComments = "SELECT comments.Time, comments.Text, users.Username FROM comments, users WHERE comments.UserID = users.UserID AND comments.PostID = {$picID} AND comments.isPictures = 1";
+    $selectComments = "SELECT comments.Time, comments.Text, users.Username FROM comments, users WHERE comments.UserID = users.UserID AND comments.PostID = {$picID}";
     
     $commentsResult = mysqli_query($conn, $selectComments);
     
@@ -796,8 +796,8 @@ function displayAllAccessiblePhotos($loggedUser, $pageOwner, $conn) {
     }
 }
 
-function insertComment($userID, $commentText, $postID, $isPictures, $conn) {
-    $insertComment = "INSERT INTO comments (Text, UserID, PostID, isPictures) VALUES ('{$commentText}', {$userID}, {$postID}, {$isPictures})";
+function insertComment($userID, $commentText, $postID, $conn) {
+    $insertComment = "INSERT INTO comments (Text, UserID, PostID) VALUES ('{$commentText}', {$userID}, {$postID})";
 
     if ($conn -> query($insertComment) === TRUE) {
         echo "Inserted comment text and userID into comments table successfully";
@@ -807,9 +807,9 @@ function insertComment($userID, $commentText, $postID, $isPictures, $conn) {
     }
 }
 // creates new blog for user or group
-function createBlog($isGroup, $privacy, $ownerID, $conn) {
+function createBlog($privacy, $ownerID, $conn) {
     
-    $insertBlog = "INSERT INTO blog_wall (IsGroup, Privacy, OwnerID) VALUES ('{$isGroup}', '{$privacy}', {$ownerID})";
+    $insertBlog = "INSERT INTO blog_wall (Privacy, OwnerID) VALUES ('{$privacy}', {$ownerID})";
     
      if ($conn -> query($insertBlog) === TRUE) {
         echo "Message inserted into messages successfully <br>";
@@ -1117,8 +1117,8 @@ function isFriendOfFriend($loggedUser, $pageOwner, $conn) {
 function getBlogID($ownerID, $isGroup, $conn) {
     $blogID = 0;
     
-    $stmt=$conn->prepare("SELECT BlogID FROM blog_wall WHERE OwnerID = ? AND isGroup =?");
-    $stmt->bind_param("ib", $ownerID, $isGroup);
+    $stmt=$conn->prepare("SELECT BlogID FROM blog_wall WHERE OwnerID = ?");
+    $stmt->bind_param("i", $ownerID);
     
     if($stmt->execute()) {
         $result = $stmt->get_result();
@@ -1187,9 +1187,9 @@ function getFriendRecommendations($user_id, $conn) {
   share the same sentiment about the same entities
   */
   $common_sentiments_sql = "
-      SELECT s2.UserID, COUNT(s1.Entity) AS count FROM sentiments AS s1
+      SELECT s2.UserID, COUNT(s1.EntityID) AS count FROM sentiments AS s1
           JOIN sentiments AS s2
-          ON s1.Entity = s2.Entity
+          ON s1.EntityID = s2.EntityID
           WHERE s1.Sentiment = s2.Sentiment
           AND s1.UserID <> s2.UserID
           AND s1.UserID = $user_id
