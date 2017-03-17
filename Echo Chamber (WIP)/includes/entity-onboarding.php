@@ -22,6 +22,8 @@ function get_entity() {
     $limit = 10;
     $sql = "SELECT Entity, COUNT(Entity) AS Count 
               FROM sentiments 
+              JOIN entity 
+              ON entity.EntityID = sentiments.EntityID
               GROUP BY Entity 
               ORDER BY Count DESC
               LIMIT $limit";
@@ -44,6 +46,8 @@ function get_entity() {
     $seen_entities_sql = "'" . implode("', '", array_keys($_SESSION['onboarding_entities'])) . "'";
     $sql = "SELECT Entity, COUNT(Entity) AS Count
               FROM sentiments
+              JOIN entity 
+              ON entity.EntityID = sentiments.EntityID
               WHERE UserID IN 
                   (
                   SELECT DISTINCT UserID FROM sentiments
@@ -64,6 +68,8 @@ function get_entity() {
       // that the user hasn't seen yet
       $sql = "SELECT Entity, COUNT(Entity) AS Count 
                   FROM sentiments 
+                  JOIN entity 
+                  ON entity.EntityID = sentiments.EntityID
                   WHERE Entity NOT IN ($seen_entities_sql)
                   GROUP BY Entity 
                   ORDER BY Count DESC";
