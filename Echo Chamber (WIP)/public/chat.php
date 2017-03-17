@@ -149,9 +149,12 @@ for($i=0; $i<count($userChats); $i++) {
 <input type="submit" class="btn btn-default" id="continueChat" disabled="disabled" value = "Continue Chat">
 </form>
 <script>
-$("input:radio").change(function () {
-  $("#continueChat").prop("disabled", false);
-});
+var radios = document.getElementsByName("chat");
+for (var i = 0 ; i < radios.length ; i++) {
+  radios[i].onclick = function () { 
+    document.getElementById("continueChat").disabled = false;
+  }  
+};
 </script>
 
 
