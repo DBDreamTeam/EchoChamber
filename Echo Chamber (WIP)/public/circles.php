@@ -33,15 +33,15 @@ $userID = $_SESSION["userID"];
 <!-- Form for creating new circle -->
 <form action = "../process/processCircleCreate.php" method = "post" enctype="multipart/form-data">
 
-<h3>Select Members for your Circle...</h3>
+<p>Select Members for your Circle...</p>
 
     <?php getFriends($userID, $link); // Lists all user's friends ?>
     <input type="hidden" name="circleMember[]" value ="<?php echo $userID;?>">
 
-<h3> Give your circle a name...</h3>
+<p> Give your circle a name...</p>
     <input type = "text" name="circleName" placeholder = "Name your circle">
 
-<h3> Who has access to your circle?</h3>
+<p> Who has access to your circle?</p>
     
     <select name ="privacy">
     <option value = "friends">Friends</option>
@@ -49,7 +49,7 @@ $userID = $_SESSION["userID"];
     <option value = "friendsOfFriends">Friends of Friends</option>
     </select><br>
     
-<h3> Upload a nice pic for your circle to marvel at :) </h3>
+<p> Upload a nice pic for your circle to marvel at :) </p>
     
     <input type="file" name = "uploadedimage"><br><br>
     
@@ -61,7 +61,7 @@ $userID = $_SESSION["userID"];
 
 <?php getCircles($userID, $link); ?>
 
-<h2>You might also be interested in...</h2>
+<p>You might also be interested in...</p>
 <!--Lists circles with privacy 'Friends' and 'FriendsOfFriends'-->
 
 <form action="blog.php" method="post">
