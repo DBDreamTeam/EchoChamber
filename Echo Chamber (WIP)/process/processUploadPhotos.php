@@ -1,6 +1,6 @@
 <?php include '../includes/phptop.php';?>
-<?php include '../includes/functions.php';?>
-<?php
+<?php include '../includes/functions.php';
+
 header('Location: ../public/managePhotos.php');
 ?>
 
