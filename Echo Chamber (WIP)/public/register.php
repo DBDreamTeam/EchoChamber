@@ -42,11 +42,11 @@
         <form action="../process/processRegistration.php" method="post" class="signup-form" enctype="multipart/form-data">
           <div class="form-group">
             <label for="firstname">First Name:</label>
-            <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Mark">
+            <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name">
           </div>
           <div class="form-group">
             <label for="lastname">Last Name:</label>
-            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Zuckerberg">
+            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Surname">
           </div>
           <div class="form-group">
             <label for="dob">Date of Birth:</label>
@@ -54,11 +54,11 @@
           </div>
           <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" placeholder="mark@facebook.com" name="email">
+            <input type="email" class="form-control" id="email" placeholder="email@email.com" name="email">
           </div>
           <div class="form-group">
             <label for="password">Password:</label>
-            <input type="password" class="form-control" id="password" name="password">
+            <input type="password" class="form-control" id="password" name="password" placeholder="password">
           </div>
           <div class="form-group">
             <label for="file">Profile Pic:</label>
