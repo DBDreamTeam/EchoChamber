@@ -1,13 +1,10 @@
 <?php
-
 /*
 This contains functions to control the serving of entities during onboarding
 on choose-your-chamber.php. It will load 5 entities in order, based on 
 the ones with the most overlap with the user's sentiments so far.
 */
-
 require_once('../includes/connect.php');
-
 function get_entity() {
   
   // Make the DB linkection available inside the function
@@ -81,5 +78,4 @@ function get_entity() {
     }
   }
 }
-
 ?>

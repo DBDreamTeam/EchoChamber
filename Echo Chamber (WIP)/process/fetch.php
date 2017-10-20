@@ -190,8 +190,7 @@ if (!empty($_POST['searchTxt'])) {
         </div><!-- End main feed col -->
       
       </div><!-- End main feed row -->
-      
-    </div>
+      </div>
       <!-- Right sidebar/recommendations area -->
       <div class="col-sm-3">
         

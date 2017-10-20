@@ -428,17 +428,30 @@ function printCommentForm($picID, $i) {
 
 
 // gets the user IDs of the members of the specified circle ID (an array) and returns an array of these IDs
-function getCircleMemberIDs($circleID, $conn) {
+function getCircleMemberIDs($circleIDs, $conn) {
     $circleMembers = array();
     
-    $selectCircleIDs = "SELECT UserID FROM group_members WHERE GroupID = {$circleID}";
+    if (gettype($circleIDs) == gettype(array())) {
+        foreach ($circleIDs as $circleID) {
+            $selectCircleIDs = "SELECT UserID FROM group_members WHERE GroupID = {$circleID}";
 
-    $circleIDsResult = mysqli_query($conn, $selectCircleIDs);
+            $circleIDsResult = mysqli_query($conn, $selectCircleIDs);
 
-    while($row = mysqli_fetch_assoc($circleIDsResult)) {
-        $circleMembers[] = $row["UserID"];
+            while($row = mysqli_fetch_assoc($circleIDsResult)) {
+                $circleMembers[] = $row["UserID"];
+            }
+        }
+    } else {
+        $circleID = $circleIDs;
+        $selectCircleIDs = "SELECT UserID FROM group_members WHERE GroupID = {$circleID}"; 
+
+        $circleIDsResult = mysqli_query($conn, $selectCircleIDs);
+
+        while($row = mysqli_fetch_assoc($circleIDsResult)) {
+            $circleMembers[] = $row["UserID"];
+        }
     }
-    
+
     return $circleMembers;
 }
 

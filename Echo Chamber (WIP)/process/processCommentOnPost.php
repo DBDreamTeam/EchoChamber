@@ -2,7 +2,7 @@
 
 session_start();
 
-header("Location: ../public/profile.php");
+header("Location: ../public/landing.php");
 
 include("../includes/connect.php");
 include("../includes/functions.php");

@@ -4,7 +4,7 @@
     // Instructions from "http://localhost:8888/MAMP/?language=English" for PHP>=5.6.x
     $user = 'root';
     $password = 'root';
-    $db = 'echochamber';
+    $db = 'echo';
     $host = 'localhost';
     $port = 8889;
     
